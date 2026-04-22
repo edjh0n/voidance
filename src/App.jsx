@@ -1,0 +1,31 @@
+import Nav          from './components/Nav'
+import Hero         from './components/Hero'
+import About        from './components/About'
+import Members      from './components/Members'
+import Discography  from './components/Discography'
+import Tour         from './components/Tour'
+import Media        from './components/Media'
+import Contact      from './components/Contact'
+import Footer       from './components/Footer'
+import MusicPlayer  from './components/MusicPlayer'
+import Starfield    from './components/Starfield'
+
+export default function App() {
+  return (
+    <>
+      <Starfield />
+      <Nav />
+      <main>
+        <Hero />
+        <About />
+        <Members />
+        <Discography />
+        <Tour />
+        <Media />
+        <Contact />
+      </main>
+      <Footer />
+      <MusicPlayer />
+    </>
+  )
+}
