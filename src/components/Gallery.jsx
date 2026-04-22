@@ -91,10 +91,24 @@ export default function Gallery() {
   const [current,  setCurrent]  = useState(0)
   const [paused,   setPaused]   = useState(false)
   const [lightbox, setLightbox] = useState(null)
-  const touchRef  = useRef(null)
-  const timerRef  = useRef(null)
-  const thumbsRef = useRef(null)
-  const activeRef = useRef(null)
+  const touchRef   = useRef(null)
+  const timerRef   = useRef(null)
+  const thumbsRef  = useRef(null)
+  const activeRef  = useRef(null)
+  const sectionRef = useRef(null)
+  const [inView, setInView] = useState(false)
+
+  // Pause auto-advance when gallery section is not visible on screen
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.1 }
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
 
   const items = useMemo(() => {
     if (filter === 'all') return GALLERY
@@ -111,16 +125,20 @@ export default function Gallery() {
 
   const startTimer = useCallback(() => {
     clearInterval(timerRef.current)
-    if (!paused && !isVideo && total > 1) {
+    if (!paused && !isVideo && total > 1 && inView) {
       timerRef.current = setInterval(() => setCurrent(c => (c + 1) % total), 5000)
     }
-  }, [paused, isVideo, total])
+  }, [paused, isVideo, total, inView])
 
   useEffect(() => { startTimer(); return () => clearInterval(timerRef.current) }, [startTimer])
 
+  // Scroll the thumbnail strip horizontally only — never touch the page scroll
   useEffect(() => {
-    if (thumbsRef.current && activeRef.current)
-      activeRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+    if (!thumbsRef.current || !activeRef.current) return
+    const container = thumbsRef.current
+    const thumb     = activeRef.current.querySelector('button') || activeRef.current
+    const scrollTarget = thumb.offsetLeft - (container.offsetWidth / 2) + (thumb.offsetWidth / 2)
+    container.scrollTo({ left: scrollTarget, behavior: 'smooth' })
   }, [current])
 
   const go = useCallback((dir) => setCurrent(c => (c + dir + total) % total), [total])
@@ -155,7 +173,7 @@ export default function Gallery() {
     : GALLERY.filter(i => i.type === 'video').length
 
   return (
-    <section id="gallery">
+    <section id="gallery" ref={sectionRef}>
       <div className="container">
         <div className="section-header">
           <span className="section-num">01 //</span>
