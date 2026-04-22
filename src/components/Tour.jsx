@@ -30,7 +30,7 @@ export default function Tour() {
     <section id="tour">
       <div className="container">
         <div className="section-header">
-          <span className="section-num">04 //</span>
+          <span className="section-num">05 //</span>
           <h2 className="section-title">TOUR DATES</h2>
           <div className="section-line" />
         </div>

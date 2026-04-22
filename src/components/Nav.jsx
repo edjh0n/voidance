@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 
 const LINKS = [
+  { href: '#gallery',      label: 'Gallery'     },
   { href: '#about',        label: 'Origin'      },
   { href: '#members',      label: 'Members'     },
   { href: '#discography',  label: 'Discography' },
@@ -12,7 +13,6 @@ const LINKS = [
 export default function Nav() {
   const [open, setOpen] = useState(false)
 
-  // Close menu on resize to desktop
   useEffect(() => {
     const onResize = () => { if (window.innerWidth > 600) setOpen(false) }
     window.addEventListener('resize', onResize)
@@ -25,14 +25,12 @@ export default function Nav() {
     <nav>
       <a href="#hero" className="nav-logo">VOIDANCE</a>
 
-      {/* Desktop links */}
       <ul className="nav-links">
         {LINKS.map(l => (
           <li key={l.href}><a href={l.href}>{l.label}</a></li>
         ))}
       </ul>
 
-      {/* Mobile hamburger */}
       <button
         className={`nav-hamburger${open ? ' nav-hamburger--open' : ''}`}
         onClick={() => setOpen(o => !o)}
@@ -41,7 +39,6 @@ export default function Nav() {
         <span /><span /><span />
       </button>
 
-      {/* Mobile drawer */}
       <div className={`nav-mobile-drawer${open ? ' nav-mobile-drawer--open' : ''}`}>
         {LINKS.map(l => (
           <a key={l.href} href={l.href} onClick={handleLink}>{l.label}</a>

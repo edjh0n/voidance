@@ -31,7 +31,7 @@ export default function Discography() {
     <section id="discography">
       <div className="container">
         <div className="section-header">
-          <span className="section-num">03 //</span>
+          <span className="section-num">04 //</span>
           <h2 className="section-title">DISCOGRAPHY</h2>
           <div className="section-line" />
         </div>

@@ -7,7 +7,7 @@ export default function Contact() {
     <section id="contact">
       <div className="container">
         <div className="section-header" style={{ justifyContent: 'center', marginBottom: '3rem' }}>
-          <span className="section-num">06 //</span>
+          <span className="section-num">07 //</span>
           <h2 className="section-title">CONTACT</h2>
           <div className="section-line" style={{ maxWidth: '200px' }} />
         </div>
@@ -27,13 +27,6 @@ export default function Contact() {
           {/* Uncomment when email is available:
           {BAND.email && (
             <a href={`mailto:${BAND.email}`} className="email-link">{BAND.email}</a>
-          )}
-          */}
-          {/* Uncomment when booking info is available:
-          {BAND.booking && (
-            <p className="booking-note">
-              For booking inquiries: <a href={`mailto:${BAND.booking}`}>{BAND.booking}</a>
-            </p>
           )}
           */}
         </div>

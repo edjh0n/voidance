@@ -4,6 +4,7 @@ import About        from './components/About'
 import Members      from './components/Members'
 import Discography  from './components/Discography'
 import Tour         from './components/Tour'
+import Gallery      from './components/Gallery'
 import Media        from './components/Media'
 import Contact      from './components/Contact'
 import Footer       from './components/Footer'
@@ -17,6 +18,7 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
+        <Gallery />
         <About />
         <Members />
         <Discography />

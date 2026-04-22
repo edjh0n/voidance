@@ -24,7 +24,7 @@ export default function Members() {
     <section id="members">
       <div className="container">
         <div className="section-header">
-          <span className="section-num">02 //</span>
+          <span className="section-num">03 //</span>
           <h2 className="section-title">THE VOID COLLECTIVE</h2>
           <div className="section-line" />
         </div>

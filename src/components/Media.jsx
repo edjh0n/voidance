@@ -54,7 +54,7 @@ export default function Media() {
     <section id="media">
       <div className="container">
         <div className="section-header">
-          <span className="section-num">05 //</span>
+          <span className="section-num">06 //</span>
           <h2 className="section-title">MEDIA</h2>
           <div className="section-line" />
         </div>

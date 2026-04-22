@@ -11,7 +11,7 @@ export default function About() {
     <section id="about">
       <div className="container">
         <div className="section-header">
-          <span className="section-num">01 //</span>
+          <span className="section-num">02 //</span>
           <h2 className="section-title">ORIGIN</h2>
           <div className="section-line" />
         </div>
