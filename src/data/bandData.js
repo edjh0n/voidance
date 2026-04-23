@@ -118,7 +118,7 @@ export const ALBUM_PALETTES = [
 
 // ── Tracks for music player ─────────────────────────────────────── v2
 export const TRACKS = [
-  { title: 'CONTRITE',              album: 'N/A · 2026', duration: 452, paletteIndex: 2, audioSrc: '/music/contrite.mp3', freq: [55,82,110], pad: [200,300], type: 'progressive metal' },
-  { title: 'RAPTURE',               album: 'N/A · 2026', duration: 554, paletteIndex: 2, audioSrc: '/music/rapture.mp3', freq: [41,61,82],  pad: [150,250], type: 'djent'  },
-  { title: 'THE GREAT BOUNDARIES',  album: 'N/A · 2026', duration: 488, paletteIndex: 2, audioSrc: '/music/the-great-boundaries.mp3', freq: [65,98,130], pad: [220,330], type: 'djent'  },
+  { title: 'CONTRITE',              album: 'N/A · 2026', duration: 269, paletteIndex: 2, audioSrc: '/music/contrite.mp3', freq: [55,82,110], pad: [200,300], type: 'progressive metal' },
+  { title: 'RAPTURE',               album: 'N/A · 2026', duration: 281, paletteIndex: 2, audioSrc: '/music/rapture.mp3', freq: [41,61,82],  pad: [150,250], type: 'djent'  },
+  { title: 'THE GREAT BOUNDARIES',  album: 'N/A · 2026', duration: 307, paletteIndex: 2, audioSrc: '/music/the-great-boundaries.mp3', freq: [65,98,130], pad: [220,330], type: 'djent'  },
 ]
