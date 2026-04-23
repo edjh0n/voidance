@@ -10,7 +10,7 @@ import Contact        from './components/Contact'
 import Footer         from './components/Footer'
 import MusicPlayer    from './components/MusicPlayer'
 import Starfield      from './components/Starfield'
-import { Analytics }  from "@vercel/analytics/next"
+import { Analytics }  from "@vercel/analytics/react"
 
 export default function App() {
   return (
@@ -29,6 +29,7 @@ export default function App() {
       </main>
       <Footer />
       <MusicPlayer />
+      <Analytics />
     </>
   )
 }
