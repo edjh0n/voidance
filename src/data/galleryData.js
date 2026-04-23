@@ -52,9 +52,9 @@ export const GALLERY = [
   // ── Videos (replace videoId with your actual YouTube video IDs) ───
   {
     type:    'video',
-    videoId: 'x-5z-q_tQcQ', // ← replace with your real YouTube video ID
-    caption: 'Voidace - Proliferate',
-    event:   'Official Video Lyrics',
+    videoId: 'KZ0QZHibRqA', // ← replace with your real YouTube video ID
+    caption: 'Voidace - Rapture',
+    event:   'Live @ Roadhouse Rock & Dine',
   },
   // {
   //   type:    'video',

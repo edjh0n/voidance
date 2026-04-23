@@ -23,7 +23,7 @@ export default function App() {
         <Members />
         <Discography />
         <Tour />
-        <Media />
+        {/* <Media /> */}
         <Contact />
       </main>
       <Footer />

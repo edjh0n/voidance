@@ -7,7 +7,7 @@ export default function Contact() {
     <section id="contact">
       <div className="container">
         <div className="section-header" style={{ justifyContent: 'center', marginBottom: '3rem' }}>
-          <span className="section-num">07 //</span>
+          <span className="section-num">06 //</span>
           <h2 className="section-title">CONTACT</h2>
           <div className="section-line" style={{ maxWidth: '200px' }} />
         </div>

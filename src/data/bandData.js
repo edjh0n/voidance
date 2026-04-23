@@ -35,7 +35,7 @@ export const TOUR_DATES = [
 export const SOCIALS = [
   { label: 'Facebook',    url: 'https://www.facebook.com/voidanceph', active: true  },
   { label: 'Instagram',   url: '#', active: false },
-  { label: 'YouTube',     url: '#', active: false },
+  { label: 'YouTube',     url: 'https://www.youtube.com/@voidanceph', active: true },
   { label: 'Spotify',     url: '#', active: false },
   { label: 'Apple Music', url: '#', active: false },
   { label: 'Bandcamp',    url: '#', active: false },
@@ -46,32 +46,32 @@ export const SOCIALS = [
 //            Set to null to show a placeholder thumbnail until you have a real video.
 // featured:  true  = large slot on the left
 //            false = small slot on the right sidebar (max 2)
-export const VIDEOS = [
-  {
-    id:        'vid1',
-    title:     'PERIHELION — Official Video',
-    meta:      'The Dying Frequency · 2024 · 7:32',
-    hue:       200,
-    featured:  true,
-    youtubeId: null, // e.g. 'dQw4w9WgXcQ'
-  },
-  {
-    id:        'vid2',
-    title:     'NEUTRON PSALMS (Live)',
-    meta:      'Wacken Open Air · 2024 · 9:14',
-    hue:       270,
-    featured:  false,
-    youtubeId: null, // e.g. 'dQw4w9WgXcQ'
-  },
-  {
-    id:        'vid3',
-    title:     'PARALLAX REQUIEM',
-    meta:      'Dark Matter Hymns · 2021 · 8:47',
-    hue:       180,
-    featured:  false,
-    youtubeId: null, // e.g. 'dQw4w9WgXcQ'
-  },
-]
+// export const VIDEOS = [
+//   {
+//     id:        'vid1',
+//     title:     'Voidance - Rapture (Live)',
+//     meta:      'N/A · 2026 · 4:12',
+//     hue:       200,
+//     featured:  true,
+//     youtubeId: 'KZ0QZHibRqA', // e.g. 'dQw4w9WgXcQ'
+//   },
+//   {
+//     id:        'vid2',
+//     title:     'NEUTRON PSALMS (Live)',
+//     meta:      'Wacken Open Air · 2024 · 9:14',
+//     hue:       270,
+//     featured:  false,
+//     youtubeId: null, // e.g. 'dQw4w9WgXcQ'
+//   },
+//   {
+//     id:        'vid3',
+//     title:     'PARALLAX REQUIEM',
+//     meta:      'Dark Matter Hymns · 2021 · 8:47',
+//     hue:       180,
+//     featured:  false,
+//     youtubeId: null, // e.g. 'dQw4w9WgXcQ'
+//   },
+// ]
 
 // ── Gallery — Events & Live ───────────────────────────────────────
 // type: 'image'       → local photo from public/images/events/
