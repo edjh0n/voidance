@@ -53,7 +53,7 @@ export const GALLERY = [
   {
     type:    'video',
     videoId: 'KZ0QZHibRqA', // ← replace with your real YouTube video ID
-    caption: 'Voidace - Rapture',
+    caption: 'Voidance - Rapture',
     event:   'Live @ Roadhouse Rock & Dine',
   },
   // {
