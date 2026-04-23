@@ -2,7 +2,7 @@
 export const BAND = {
   name:    'VOIDANCE',
   tagline: 'Born from the collapse of dying stars',
-  genre:   'Progressive Metal · Djent',
+  genre:   'Progressive Metal',
   origin:  'Cebu City, Philippines',
   formed:  2026,
   email:   null,    // e.g. 'signal@voidance.band'
@@ -13,6 +13,7 @@ export const BAND = {
 export const MEMBERS = [
   { initials: 'JG',  role: 'Vocals', name: 'Jayke Garganera',  socials: {} },
   { initials: 'RY',  role: 'Guitar', name: 'Rovalle Yraola',   socials: {} },
+  { initials: 'EB',  role: 'Guitar', name: 'Erik Bombeza',     socials: {} },
   { initials: 'EJB', role: 'Guitar', name: 'Ed Jan Baquero',   socials: {} },
   { initials: 'AB',  role: 'Bass',   name: 'Adrian Buquis',    socials: {} },
   { initials: 'ER',  role: 'Drums',  name: 'Elizier Roca',     socials: {} },
@@ -27,7 +28,7 @@ export const ALBUMS = [
 
 // ── Tour dates ───────────────────────────────────────────────────
 export const TOUR_DATES = [
-  { date: 'APRIL 17', year: '2026', venue: 'Roadhous Rock & Dine', location: 'San Fernando, Cebu, Philippines',       status: 'sold-out' },
+  { date: 'APRIL 18', year: '2026', venue: 'Roadhouse Rock & Dine', location: 'San Fernando, Cebu, Philippines',       status: 'sold-out' },
 ]
 
 // ── Social media links ───────────────────────────────────────────
@@ -41,10 +42,35 @@ export const SOCIALS = [
 ]
 
 // ── Media videos ─────────────────────────────────────────────────
+// youtubeId: the ID from the YouTube URL → youtube.com/watch?v=THIS_PART
+//            Set to null to show a placeholder thumbnail until you have a real video.
+// featured:  true  = large slot on the left
+//            false = small slot on the right sidebar (max 2)
 export const VIDEOS = [
-  { id: 'vid1', title: 'PERIHELION — Official Video', meta: 'The Dying Frequency · 2024 · 7:32', hue: 200, featured: true  },
-  { id: 'vid2', title: 'NEUTRON PSALMS (Live)',        meta: 'Wacken Open Air · 2024 · 9:14',    hue: 270, featured: false },
-  { id: 'vid3', title: 'PARALLAX REQUIEM',             meta: 'Dark Matter Hymns · 2021 · 8:47',  hue: 180, featured: false },
+  {
+    id:        'vid1',
+    title:     'PERIHELION — Official Video',
+    meta:      'The Dying Frequency · 2024 · 7:32',
+    hue:       200,
+    featured:  true,
+    youtubeId: null, // e.g. 'dQw4w9WgXcQ'
+  },
+  {
+    id:        'vid2',
+    title:     'NEUTRON PSALMS (Live)',
+    meta:      'Wacken Open Air · 2024 · 9:14',
+    hue:       270,
+    featured:  false,
+    youtubeId: null, // e.g. 'dQw4w9WgXcQ'
+  },
+  {
+    id:        'vid3',
+    title:     'PARALLAX REQUIEM',
+    meta:      'Dark Matter Hymns · 2021 · 8:47',
+    hue:       180,
+    featured:  false,
+    youtubeId: null, // e.g. 'dQw4w9WgXcQ'
+  },
 ]
 
 // ── Gallery — Events & Live ───────────────────────────────────────
@@ -92,11 +118,7 @@ export const ALBUM_PALETTES = [
 
 // ── Tracks for music player ───────────────────────────────────────
 export const TRACKS = [
-  { title: 'PERIHELION',          album: 'The Dying Frequency · 2024', duration: 452, paletteIndex: 2, audioSrc: null, freq: [55,82,110], pad: [200,300], type: 'djent' },
-  { title: 'NEUTRON PSALMS',      album: 'The Dying Frequency · 2024', duration: 554, paletteIndex: 2, audioSrc: null, freq: [41,61,82],  pad: [150,250], type: 'doom'  },
-  { title: 'THE DYING FREQUENCY', album: 'The Dying Frequency · 2024', duration: 488, paletteIndex: 2, audioSrc: null, freq: [65,98,130], pad: [220,330], type: 'prog'  },
-  { title: 'PARALLAX REQUIEM',    album: 'Dark Matter Hymns · 2021',   duration: 527, paletteIndex: 1, audioSrc: null, freq: [46,69,92],  pad: [180,270], type: 'djent' },
-  { title: 'EVENT HORIZON',       album: 'Event Horizon · 2019',       duration: 389, paletteIndex: 0, audioSrc: null, freq: [36,54,72],  pad: [160,240], type: 'doom'  },
-  { title: 'ACCRETION DISK',      album: 'Dark Matter Hymns · 2021',   duration: 476, paletteIndex: 1, audioSrc: null, freq: [58,87,116], pad: [210,315], type: 'prog'  },
-  { title: 'PULSAR DRIFT',        album: 'Event Horizon · 2019',       duration: 412, paletteIndex: 0, audioSrc: null, freq: [44,66,88],  pad: [170,255], type: 'djent' },
+  { title: 'CONTRITE',              album: 'N/A · 2026', duration: 452, paletteIndex: 2, audioSrc: '/music/contrite.wav', freq: [55,82,110], pad: [200,300], type: 'progressive metal' },
+  { title: 'RAPTURE',               album: 'N/A · 2026', duration: 554, paletteIndex: 2, audioSrc: '/music/rapture.wav', freq: [41,61,82],  pad: [150,250], type: 'djent'  },
+  { title: 'THE GREAT BOUNDARIES',  album: 'N/A · 2026', duration: 488, paletteIndex: 2, audioSrc: '/music/the-great-boundaries.wav', freq: [65,98,130], pad: [220,330], type: 'djent'  },
 ]

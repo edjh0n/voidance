@@ -71,10 +71,10 @@ function Thumb({ item, active, onClick, index }) {
       onClick={onClick}
       aria-label={`Slide ${index + 1}`}
     >
-      {item.type === 'image' && <img src={item.thumb || item.src} alt="" draggable={false} />}
-      {item.type === 'video' && <img src={`https://img.youtube.com/vi/${item.videoId}/default.jpg`} alt="" draggable={false} />}
+      {item.type === 'image'       && <img src={item.thumb || item.src} alt="" draggable={false} />}
+      {item.type === 'video'       && <img src={`https://img.youtube.com/vi/${item.videoId}/default.jpg`} alt="" draggable={false} />}
       {item.type === 'placeholder' && <div className="gallery-thumb-placeholder"><IconImage /></div>}
-      {item.type === 'video' && <span className="gallery-thumb-video-icon"><IconVideo /></span>}
+      {item.type === 'video'       && <span className="gallery-thumb-video-icon"><IconVideo /></span>}
     </button>
   )
 }
@@ -91,38 +91,65 @@ export default function Gallery() {
   const [current,  setCurrent]  = useState(0)
   const [paused,   setPaused]   = useState(false)
   const [lightbox, setLightbox] = useState(null)
+  const [inView,   setInView]   = useState(false)
+
   const touchRef   = useRef(null)
   const timerRef   = useRef(null)
   const thumbsRef  = useRef(null)
   const activeRef  = useRef(null)
   const sectionRef = useRef(null)
-  const [inView, setInView] = useState(false)
 
-  // Pause auto-advance when gallery section is not visible on screen
-  useEffect(() => {
-    const el = sectionRef.current
-    if (!el) return
-    const obs = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.1 }
-    )
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [])
-
+  // ── Derived data ────────────────────────────────────────────────
   const items = useMemo(() => {
-    if (filter === 'all') return GALLERY
+    if (filter === 'all')   return GALLERY
     if (filter === 'image') return GALLERY.filter(i => i.type === 'image' || i.type === 'placeholder')
     return GALLERY.filter(i => i.type === 'video')
   }, [filter])
 
-  const total    = items.length
-  const item     = items[current]
-  const isVideo  = item?.type === 'video'
+  const total     = items.length
+  const item      = items[current]
+  const isVideo   = item?.type === 'video'
   const useThumbs = total > THUMB_THRESHOLD
 
+  // Indices within `items` that are actual images (lightbox only navigates these)
+  const imageIndices = useMemo(
+    () => items.reduce((acc, s, i) => { if (s.type === 'image') acc.push(i); return acc }, []),
+    [items]
+  )
+
+  // Where the current lightbox sits within imageIndices, and its neighbours
+  const lightboxImagePos = lightbox !== null ? imageIndices.indexOf(lightbox) : -1
+  const prevImageIdx     = lightboxImagePos > 0                       ? imageIndices[lightboxImagePos - 1] : null
+  const nextImageIdx     = lightboxImagePos < imageIndices.length - 1 ? imageIndices[lightboxImagePos + 1] : null
+
+  const hasPhotos = GALLERY.some(i => i.type === 'image' || i.type === 'placeholder')
+  const hasVideos = GALLERY.some(i => i.type === 'video')
+  const tabCount  = (tab) =>
+    tab === 'all'   ? GALLERY.length
+    : tab === 'image' ? GALLERY.filter(i => i.type === 'image' || i.type === 'placeholder').length
+    : GALLERY.filter(i => i.type === 'video').length
+
+  // ── Effects ─────────────────────────────────────────────────────
+
+  // Lock body scroll when lightbox is open
+  useEffect(() => {
+    document.body.style.overflow = lightbox !== null ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [lightbox])
+
+  // Reset to slide 0 when filter changes
   useEffect(() => { setCurrent(0) }, [filter])
 
+  // Pause auto-advance when section is off-screen
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const obs = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.1 })
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
+  // Auto-advance timer
   const startTimer = useCallback(() => {
     clearInterval(timerRef.current)
     if (!paused && !isVideo && total > 1 && inView) {
@@ -132,23 +159,24 @@ export default function Gallery() {
 
   useEffect(() => { startTimer(); return () => clearInterval(timerRef.current) }, [startTimer])
 
-  // Scroll the thumbnail strip horizontally only — never touch the page scroll
+  // Scroll active thumbnail into view (horizontal only — never moves the page)
   useEffect(() => {
     if (!thumbsRef.current || !activeRef.current) return
     const container = thumbsRef.current
     const thumb     = activeRef.current.querySelector('button') || activeRef.current
-    const scrollTarget = thumb.offsetLeft - (container.offsetWidth / 2) + (thumb.offsetWidth / 2)
-    container.scrollTo({ left: scrollTarget, behavior: 'smooth' })
+    const target    = thumb.offsetLeft - (container.offsetWidth / 2) + (thumb.offsetWidth / 2)
+    container.scrollTo({ left: target, behavior: 'smooth' })
   }, [current])
 
+  // Keyboard navigation — declared AFTER prevImageIdx / nextImageIdx
   const go = useCallback((dir) => setCurrent(c => (c + dir + total) % total), [total])
 
   useEffect(() => {
     const onKey = e => {
       if (lightbox !== null) {
-        if (e.key === 'ArrowLeft')  setLightbox(c => (c - 1 + total) % total)
-        if (e.key === 'ArrowRight') setLightbox(c => (c + 1) % total)
-        if (e.key === 'Escape')     setLightbox(null)
+        if (e.key === 'ArrowLeft'  && prevImageIdx !== null) setLightbox(prevImageIdx)
+        if (e.key === 'ArrowRight' && nextImageIdx !== null) setLightbox(nextImageIdx)
+        if (e.key === 'Escape') setLightbox(null)
       } else {
         if (e.key === 'ArrowLeft')  go(-1)
         if (e.key === 'ArrowRight') go(1)
@@ -156,8 +184,9 @@ export default function Gallery() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [go, lightbox, total])
+  }, [go, lightbox, prevImageIdx, nextImageIdx])
 
+  // Touch swipe
   const onTouchStart = e => { touchRef.current = e.touches[0].clientX }
   const onTouchEnd   = e => {
     if (touchRef.current === null) return
@@ -166,12 +195,7 @@ export default function Gallery() {
     touchRef.current = null
   }
 
-  const hasPhotos = GALLERY.some(i => i.type === 'image' || i.type === 'placeholder')
-  const hasVideos = GALLERY.some(i => i.type === 'video')
-  const tabCount  = (tab) => tab === 'all' ? GALLERY.length
-    : tab === 'image' ? GALLERY.filter(i => i.type === 'image' || i.type === 'placeholder').length
-    : GALLERY.filter(i => i.type === 'video').length
-
+  // ── Render ──────────────────────────────────────────────────────
   return (
     <section id="gallery" ref={sectionRef}>
       <div className="container">
@@ -197,7 +221,7 @@ export default function Gallery() {
           })}
         </div>
 
-        {/* Carousel */}
+        {/* Carousel stage */}
         <div className="carousel"
           onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}
           onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
@@ -232,7 +256,7 @@ export default function Gallery() {
           </div>
         </div>
 
-        {/* Thumbnails or dots */}
+        {/* Thumbnail strip or dot indicators */}
         {total > 1 && (useThumbs ? (
           <div className="gallery-thumbs" ref={thumbsRef}>
             {items.map((slide, i) => (
@@ -251,21 +275,51 @@ export default function Gallery() {
           </div>
         ))}
 
-      </div>
+      </div>{/* /container */}
 
-      {/* Lightbox */}
+      {/* Lightbox — only opens for image type, navigates only among images */}
       {lightbox !== null && items[lightbox]?.type === 'image' && (
         <div className="lightbox" onClick={() => setLightbox(null)}>
+
           <button className="lightbox-close" onClick={() => setLightbox(null)}>&#x2715;</button>
-          <button className="lightbox-prev" onClick={e => { e.stopPropagation(); setLightbox(c => (c - 1 + total) % total) }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-          </button>
-          <img src={items[lightbox].src} alt={items[lightbox].caption}
-            className="lightbox-img" onClick={e => e.stopPropagation()} draggable={false} />
-          <button className="lightbox-next" onClick={e => { e.stopPropagation(); setLightbox(c => (c + 1) % total) }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-          </button>
-          {items[lightbox].caption && <p className="lightbox-caption">{items[lightbox].caption}</p>}
+
+          {/* Prev hidden when no previous image exists */}
+          {prevImageIdx !== null && (
+            <button className="lightbox-prev"
+              onClick={e => { e.stopPropagation(); setLightbox(prevImageIdx) }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+              </svg>
+            </button>
+          )}
+
+          <img
+            src={items[lightbox].src}
+            alt={items[lightbox].caption}
+            className="lightbox-img"
+            onClick={e => e.stopPropagation()}
+            draggable={false}
+          />
+
+          {/* Next hidden when no next image exists */}
+          {nextImageIdx !== null && (
+            <button className="lightbox-next"
+              onClick={e => { e.stopPropagation(); setLightbox(nextImageIdx) }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+              </svg>
+            </button>
+          )}
+
+          {/* Counter shows position among images only e.g. 2 / 5 */}
+          <div className="lightbox-counter">
+            {lightboxImagePos + 1} / {imageIndices.length}
+          </div>
+
+          {items[lightbox].caption && (
+            <p className="lightbox-caption">{items[lightbox].caption}</p>
+          )}
+
         </div>
       )}
     </section>

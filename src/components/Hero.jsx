@@ -1,7 +1,7 @@
 export default function Hero() {
   return (
     <section id="hero">
-      <p className="hero-tag">// Progressive Metal &middot; Djent &middot; Cebu City, Philippines</p>
+      <p className="hero-tag">// Progressive Metal &middot; Cebu City, Philippines</p>
       <h1 className="band-name">
         <span className="glitch" data-text="VOIDANCE">VOIDANCE</span>
       </h1>

@@ -18,36 +18,36 @@ export const GALLERY = [
     caption: 'First gig photo — coming soon',
     event:   '',
     // Replace with real photo:
-    // type:    'image',
-    // src:     '/images/events/gig-01.jpg',
-    // thumb:   '/images/events/gig-01.jpg',
-    // caption: 'Live at [Venue] — [Date]',
-    // event:   '[Event Name]',
+    type:    'image',
+    src:     '/images/events/gig-2026-04-18.jpg',
+    thumb:   '/images/events/gig-2026-04-18.jpg',
+    caption: 'Live at Roadhouse Rock & Dine — April 18, 2026',
+    event:   'Pitalo Noise',
   },
-  {
-    type:    'placeholder',
-    caption: 'Soundcheck — coming soon',
-    event:   '',
-    // type: 'image', src: '/images/events/soundcheck.jpg', thumb: '/images/events/soundcheck.jpg',
-    // caption: 'Soundcheck — [Venue]', event: '[Event]',
-  },
-  {
-    type:    'placeholder',
-    caption: 'Behind the scenes — coming soon',
-    event:   '',
-    // type: 'image', src: '/images/events/bts.jpg', thumb: '/images/events/bts.jpg',
-    // caption: 'Behind the scenes', event: '',
-  },
-  {
-    type:    'placeholder',
-    caption: 'On stage — coming soon',
-    event:   '',
-  },
-  {
-    type:    'placeholder',
-    caption: 'After show — coming soon',
-    event:   '',
-  },
+  // {
+  //   type:    'placeholder',
+  //   caption: 'Soundcheck — coming soon',
+  //   event:   '',
+  //   // type: 'image', src: '/images/events/soundcheck.jpg', thumb: '/images/events/soundcheck.jpg',
+  //   // caption: 'Soundcheck — [Venue]', event: '[Event]',
+  // },
+  // {
+  //   type:    'placeholder',
+  //   caption: 'Behind the scenes — coming soon',
+  //   event:   '',
+  //   // type: 'image', src: '/images/events/bts.jpg', thumb: '/images/events/bts.jpg',
+  //   // caption: 'Behind the scenes', event: '',
+  // },
+  // {
+  //   type:    'placeholder',
+  //   caption: 'On stage — coming soon',
+  //   event:   '',
+  // },
+  // {
+  //   type:    'placeholder',
+  //   caption: 'After show — coming soon',
+  //   event:   '',
+  // },
 
   // ── Videos (replace videoId with your actual YouTube video IDs) ───
   {

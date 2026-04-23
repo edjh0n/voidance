@@ -11,7 +11,15 @@ const LINKS = [
 ]
 
 export default function Nav() {
-  const [open, setOpen] = useState(false)
+  const [open,      setOpen]      = useState(false)
+  const [scrolled,  setScrolled]  = useState(false)
+
+  // Solid nav once user scrolls past 80px
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 80)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   useEffect(() => {
     const onResize = () => { if (window.innerWidth > 600) setOpen(false) }
@@ -22,7 +30,7 @@ export default function Nav() {
   const handleLink = () => setOpen(false)
 
   return (
-    <nav>
+    <nav className={scrolled ? 'nav--scrolled' : ''}>
       <a href="#hero" className="nav-logo">VOIDANCE</a>
 
       <ul className="nav-links">

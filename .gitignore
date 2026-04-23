@@ -18,3 +18,27 @@ npm-debug.log*
 # OS files
 .DS_Store
 Thumbs.db
+
+# ── Media files — excluded from GitHub ──────────────────────────────
+# GitHub rejects files over 100MB and warns on files over 50MB.
+# Audio and image files must be managed manually across machines.
+# See README.md → "Managing Large Media Files" for instructions.
+
+# Audio files (music player)
+public/music/*.mp3
+public/music/*.wav
+public/music/*.ogg
+public/music/*.flac
+public/music/*.aac
+public/music/*.m4a
+
+# Event photos (gallery)
+public/images/events/*.jpg
+public/images/events/*.jpeg
+public/images/events/*.png
+public/images/events/*.webp
+public/images/events/*.gif
+
+# Keep the README files inside those folders
+!public/music/README.md
+!public/images/events/README.md

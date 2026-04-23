@@ -6,7 +6,7 @@ function MemberCard({ member }) {
       <div className="member-avatar" data-initials={member.initials} />
       <div className="member-role">{member.role}</div>
       <div className="member-name">{member.name}</div>
-      {/* Uncomment and populate member.socials when available:
+      { // Uncomment and populate member.socials when available:
       <div className="member-socials">
         {Object.entries(member.socials).map(([platform, url]) => (
           <a key={platform} href={url} className="member-social-link" target="_blank" rel="noopener">
@@ -14,7 +14,7 @@ function MemberCard({ member }) {
           </a>
         ))}
       </div>
-      */}
+      }
     </div>
   )
 }
