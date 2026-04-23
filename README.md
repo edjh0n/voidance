@@ -327,18 +327,48 @@ Add, remove, or reorder carousel items here.
 
 ## Adding Real Music Files
 
-1. Drop your file into `public/music/` (e.g. `perihelion.mp3`)
-2. Open `src/data/bandData.js` and set `audioSrc` on the matching track:
+> ⚠️ **Use MP3, not WAV for production.**
+> WAV is uncompressed — a 3-minute song can be 30–50MB and longer tracks can
+> exceed Vercel's 100MB file limit. MP3 is 10× smaller with no noticeable
+> quality difference for web streaming. Convert with Audacity (free) or any
+> online converter.
+
+1. Convert your track to MP3 if it isn't already
+2. Drop the file into `public/music/` (e.g. `contrite.mp3`)
+3. Open `src/data/bandData.js` and set `audioSrc` on the matching track:
 
 ```js
-audioSrc: '/music/perihelion.mp3',
+audioSrc: '/music/contrite.mp3',
 ```
 
 The player auto-detects the file. If missing, it silently falls back to the
-built-in Web Audio synth. See `public/music/README.md` for the full guide.
+built-in Web Audio synth.
 
 > ⚠️ **Do not push audio files to GitHub.** They are excluded in `.gitignore`.
 > See **Managing Large Media Files** below for how to handle them.
+
+### Deploying audio files to Vercel
+
+Because audio files are excluded from GitHub, Vercel's auto-deploy from GitHub
+will **not** include them. You have two options:
+
+**Option A — Deploy locally with Vercel CLI (simplest)**
+```bash
+cd C:\Users\ebaquero\voidance-react
+vercel --prod
+```
+This deploys from your local folder and includes the audio files directly.
+The `vercel.json` file already has the correct `Accept-Ranges` and
+`Content-Type` headers configured so audio streams properly.
+
+**Option B — Host audio on a CDN (best for teams)**
+Upload audio files to a CDN (Cloudflare R2, AWS S3, Bunny.net) and point
+`audioSrc` at the public URL:
+```js
+audioSrc: 'https://your-cdn.com/voidance/contrite.mp3',
+```
+This way GitHub push → Vercel auto-deploy works for everything else,
+and audio is served fast from a dedicated CDN.
 
 ---
 

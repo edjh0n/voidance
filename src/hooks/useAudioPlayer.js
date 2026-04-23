@@ -3,15 +3,15 @@ import { AudioEngine } from '../utils/audioEngine'
 import { TRACKS } from '../data/bandData'
 
 export default function useAudioPlayer() {
-  const engine        = useRef(new AudioEngine())
-  const startedAtRef  = useRef(0)
-  const timerRef      = useRef(null)
+  const engine       = useRef(new AudioEngine())
+  const startedAtRef = useRef(0)
+  const timerRef     = useRef(null)
 
-  const [trackIndex,   setTrackIndex]   = useState(0)
-  const [isPlaying,    setIsPlaying]    = useState(false)
-  const [currentTime,  setCurrentTime]  = useState(0)
-  const [volume,       setVolume]       = useState(0.7)
-  const [muted,        setMuted]        = useState(false)
+  const [trackIndex,  setTrackIndex]  = useState(0)
+  const [isPlaying,   setIsPlaying]   = useState(false)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [volume,      setVolume]      = useState(0.7)
+  const [muted,       setMuted]       = useState(false)
 
   const track = TRACKS[trackIndex]
 
@@ -20,24 +20,19 @@ export default function useAudioPlayer() {
     return `${m}:${sec < 10 ? '0' : ''}${sec}`
   }
 
-  // ── Timer — works for both real and synth mode ───────────────
+  // ── Progress timer ───────────────────────────────────────────
   const startTimer = useCallback((fromTime = 0) => {
     clearInterval(timerRef.current)
     startedAtRef.current = engine.current.currentTime - fromTime
-
     timerRef.current = setInterval(() => {
       let ct
-
       if (TRACKS[trackIndex].audioSrc) {
-        // Real audio: read directly from HTMLAudioElement
         ct = engine.current.currentTime
       } else {
-        // Synth: calculate elapsed from Web Audio clock
         ct = engine.current.ready
           ? engine.current.currentTime - startedAtRef.current
           : fromTime
       }
-
       const dur = TRACKS[trackIndex].duration
       if (ct >= dur) {
         setTrackIndex(i => (i + 1) % TRACKS.length)
@@ -49,27 +44,22 @@ export default function useAudioPlayer() {
     }, 250)
   }, [trackIndex])
 
-  // ── Play ─────────────────────────────────────────────────────
+  // ── Play (with fade in) ──────────────────────────────────────
   const play = useCallback((idx = trackIndex, from = 0) => {
     const vol = muted ? 0 : volume
     engine.current.play(TRACKS[idx], vol)
-
-    // For real audio, seek to position if resuming mid-track
-    if (TRACKS[idx].audioSrc && from > 0) {
-      engine.current.seek(from)
-    }
-
+    if (TRACKS[idx].audioSrc && from > 0) engine.current.seek(from)
     setTrackIndex(idx)
     setCurrentTime(from)
     setIsPlaying(true)
     startTimer(from)
   }, [trackIndex, volume, muted, startTimer])
 
-  // ── Pause ────────────────────────────────────────────────────
+  // ── Pause (with fade out) ────────────────────────────────────
   const pause = useCallback(() => {
-    engine.current.stop()
-    clearInterval(timerRef.current)
+    clearInterval(timerRef.current)  // stop progress bar immediately
     setIsPlaying(false)
+    engine.current.fadeOut()         // audio fades to silence then stops
   }, [])
 
   // ── Toggle ───────────────────────────────────────────────────
@@ -77,18 +67,35 @@ export default function useAudioPlayer() {
     isPlaying ? pause() : play(trackIndex, currentTime)
   }, [isPlaying, pause, play, trackIndex, currentTime])
 
-  // ── Next / Prev ──────────────────────────────────────────────
+  // ── Next (crossfade) ─────────────────────────────────────────
   const next = useCallback(() => {
     const idx = (trackIndex + 1) % TRACKS.length
-    if (isPlaying) play(idx, 0)
-    else { setTrackIndex(idx); setCurrentTime(0) }
-  }, [trackIndex, isPlaying, play])
+    if (isPlaying) {
+      const vol = muted ? 0 : volume
+      engine.current.crossfadeTo(TRACKS[idx], vol)
+      setTrackIndex(idx)
+      setCurrentTime(0)
+      startTimer(0)
+    } else {
+      setTrackIndex(idx)
+      setCurrentTime(0)
+    }
+  }, [trackIndex, isPlaying, volume, muted, startTimer])
 
+  // ── Prev (crossfade) ─────────────────────────────────────────
   const prev = useCallback(() => {
     const idx = (trackIndex - 1 + TRACKS.length) % TRACKS.length
-    if (isPlaying) play(idx, 0)
-    else { setTrackIndex(idx); setCurrentTime(0) }
-  }, [trackIndex, isPlaying, play])
+    if (isPlaying) {
+      const vol = muted ? 0 : volume
+      engine.current.crossfadeTo(TRACKS[idx], vol)
+      setTrackIndex(idx)
+      setCurrentTime(0)
+      startTimer(0)
+    } else {
+      setTrackIndex(idx)
+      setCurrentTime(0)
+    }
+  }, [trackIndex, isPlaying, volume, muted, startTimer])
 
   // ── Seek ─────────────────────────────────────────────────────
   const seek = useCallback(pct => {
