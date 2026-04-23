@@ -6,7 +6,7 @@ const LINKS = [
   { href: '#members',      label: 'Members'     },
   { href: '#discography',  label: 'Discography' },
   { href: '#tour',         label: 'Tour'        },
-  { href: '#media',        label: 'Media'       },
+  // { href: '#media',        label: 'Media'       },
   { href: '#contact',      label: 'Contact'     },
 ]
 
