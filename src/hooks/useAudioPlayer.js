@@ -44,22 +44,27 @@ export default function useAudioPlayer() {
     }, 250)
   }, [trackIndex])
 
-  // ── Play (with fade in) ──────────────────────────────────────
+  // ── Play — crossfades if already playing, hard start if not ──
   const play = useCallback((idx = trackIndex, from = 0) => {
     const vol = muted ? 0 : volume
-    engine.current.play(TRACKS[idx], vol)
-    if (TRACKS[idx].audioSrc && from > 0) engine.current.seek(from)
+    if (isPlaying && from === 0) {
+      // Crossfade to new track
+      engine.current.crossfadeTo(TRACKS[idx], vol)
+    } else {
+      engine.current.play(TRACKS[idx], vol)
+      if (TRACKS[idx].audioSrc && from > 0) engine.current.seek(from)
+    }
     setTrackIndex(idx)
     setCurrentTime(from)
     setIsPlaying(true)
     startTimer(from)
-  }, [trackIndex, volume, muted, startTimer])
+  }, [trackIndex, isPlaying, volume, muted, startTimer])
 
   // ── Pause (with fade out) ────────────────────────────────────
   const pause = useCallback(() => {
-    clearInterval(timerRef.current)  // stop progress bar immediately
+    clearInterval(timerRef.current)
     setIsPlaying(false)
-    engine.current.fadeOut()         // audio fades to silence then stops
+    engine.current.fadeOut()  // fades to silence then stops
   }, [])
 
   // ── Toggle ───────────────────────────────────────────────────
@@ -67,35 +72,14 @@ export default function useAudioPlayer() {
     isPlaying ? pause() : play(trackIndex, currentTime)
   }, [isPlaying, pause, play, trackIndex, currentTime])
 
-  // ── Next (crossfade) ─────────────────────────────────────────
+  // ── Next / Prev — crossfade handled by play() ────────────────
   const next = useCallback(() => {
-    const idx = (trackIndex + 1) % TRACKS.length
-    if (isPlaying) {
-      const vol = muted ? 0 : volume
-      engine.current.crossfadeTo(TRACKS[idx], vol)
-      setTrackIndex(idx)
-      setCurrentTime(0)
-      startTimer(0)
-    } else {
-      setTrackIndex(idx)
-      setCurrentTime(0)
-    }
-  }, [trackIndex, isPlaying, volume, muted, startTimer])
+    play((trackIndex + 1) % TRACKS.length, 0)
+  }, [trackIndex, play])
 
-  // ── Prev (crossfade) ─────────────────────────────────────────
   const prev = useCallback(() => {
-    const idx = (trackIndex - 1 + TRACKS.length) % TRACKS.length
-    if (isPlaying) {
-      const vol = muted ? 0 : volume
-      engine.current.crossfadeTo(TRACKS[idx], vol)
-      setTrackIndex(idx)
-      setCurrentTime(0)
-      startTimer(0)
-    } else {
-      setTrackIndex(idx)
-      setCurrentTime(0)
-    }
-  }, [trackIndex, isPlaying, volume, muted, startTimer])
+    play((trackIndex - 1 + TRACKS.length) % TRACKS.length, 0)
+  }, [trackIndex, play])
 
   // ── Seek ─────────────────────────────────────────────────────
   const seek = useCallback(pct => {

@@ -223,17 +223,96 @@ Open your browser at **`http://localhost:5173`**
 
 ## Deploying to Vercel
 
-```bash
-# First time only
-npm install -g vercel
-vercel login
-vercel
+There are two ways to deploy depending on whether audio files are involved.
 
-# Every update after that
+---
+
+### When to use each method
+
+| What changed | How to deploy |
+|---|---|
+| Code or content only (no audio files) | `git push` — Vercel auto-deploys |
+| Audio files added or changed | `vercel --prod` from your terminal |
+
+---
+
+### Method 1 — Git push (code changes only)
+
+```bash
+cd C:\Users\ebaquero\voidance-react
+git add .
+git commit -m "describe your change"
+git push
+```
+
+Vercel detects the push and auto-deploys within ~30 seconds.
+No extra steps needed.
+
+---
+
+### Method 2 — vercel --prod (audio files included)
+
+Use this whenever you add or change MP3 files in `public/music/`.
+Audio files are excluded from GitHub (in `.gitignore`), so `git push` alone
+will never include them. This command deploys directly from your local folder.
+
+**Step 1 — Open a terminal in the project folder**
+
+Press `Win + R`, type `cmd`, press Enter. Then run:
+```bash
+cd C:\Users\ebaquero\voidance-react
+```
+
+**Step 2 — Run the deploy command**
+
+```bash
+vercel --prod --yes
+```
+
+That's it. Vercel uploads everything including your MP3 files and deploys to
+**https://voidance.vercel.app** automatically.
+
+**Step 3 — Wait for it to finish**
+
+You'll see output like:
+```
+Uploading [====================] (30.9MB/30.9MB)
+Building...
+✓ built in 1.2s
+Aliased: https://voidance.vercel.app
+```
+
+When you see `Aliased: https://voidance.vercel.app` — it's live. Done.
+
+---
+
+### If vercel --prod asks you to log in
+
+Run this first:
+```bash
+vercel login
+```
+
+It will give you a URL to open in your browser. Log in there, come back to the
+terminal, and it will continue automatically. You only need to do this once.
+
+---
+
+### Doing both at the same time
+
+If you changed code AND audio files:
+
+```bash
+# Step 1 — push code to GitHub
 git add .
 git commit -m "your change"
-git push        # Vercel auto-deploys on push
+git push
+
+# Step 2 — deploy with audio files
+vercel --prod --yes
 ```
+
+Always push to GitHub first so the code and audio are in sync on Vercel.
 
 ---
 

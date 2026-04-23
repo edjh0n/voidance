@@ -42,3 +42,5 @@ public/images/events/*.gif
 # Keep the README files inside those folders
 !public/music/README.md
 !public/images/events/README.md
+
+.vercel

@@ -116,7 +116,7 @@ export const ALBUM_PALETTES = [
   { center: 'rgba(5,30,25,0.9)',  edge: 'rgba(2,4,8,1)', ring: '0,200,120',  line: '20,220,150', glow: '0,210,130'  },
 ]
 
-// ── Tracks for music player ───────────────────────────────────────
+// ── Tracks for music player ─────────────────────────────────────── v2
 export const TRACKS = [
   { title: 'CONTRITE',              album: 'N/A · 2026', duration: 452, paletteIndex: 2, audioSrc: '/music/contrite.mp3', freq: [55,82,110], pad: [200,300], type: 'progressive metal' },
   { title: 'RAPTURE',               album: 'N/A · 2026', duration: 554, paletteIndex: 2, audioSrc: '/music/rapture.mp3', freq: [41,61,82],  pad: [150,250], type: 'djent'  },
