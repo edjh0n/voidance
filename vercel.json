@@ -1,4 +1,9 @@
 {
+  "github": {
+    "silent": true,
+    "autoJobCancelation": false
+  },
+  "ignoreCommand": "exit 1",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ],
