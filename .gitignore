@@ -44,3 +44,4 @@ public/images/events/*.gif
 !public/images/events/README.md
 
 .vercel
+.env*.local
