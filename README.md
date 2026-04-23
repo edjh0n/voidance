@@ -221,6 +221,105 @@ Open your browser at **`http://localhost:5173`**
 
 ---
 
+## Setting Up Vercel on a New Machine
+
+Do this **once** on every new machine before you can deploy.
+
+---
+
+### Step 1 — Install Vercel CLI
+
+Open a terminal and run:
+```bash
+npm install -g vercel
+```
+Wait for it to finish. Verify it worked:
+```bash
+vercel --version
+```
+
+---
+
+### Step 2 — Log in to Vercel
+
+```bash
+vercel login
+```
+
+The terminal will show something like:
+```
+Visit https://vercel.com/oauth/device?user_code=XXXX-XXXX
+Waiting for authentication...
+```
+
+1. Copy the URL and open it in your browser
+2. Log in with your Vercel account and click **Approve**
+3. Come back to the terminal — it will say `Congratulations! You are now signed in.`
+
+You only need to do this once per machine.
+
+---
+
+### Step 3 — Copy your audio files
+
+Audio files are not on GitHub, so you need to copy them manually to the new machine.
+Place them in the exact same folder:
+```
+public/music/contrite.mp3
+public/music/rapture.mp3
+public/music/the-great-boundaries.mp3
+```
+
+Use a USB drive, Google Drive, or any file transfer method.
+
+---
+
+### Step 4 — Deploy
+
+```bash
+cd C:\path\to\your\voidance
+vercel --prod --yes
+```
+
+The first time you run this on a new machine, it may ask:
+```
+Set up and deploy? [Y/n]
+```
+Type `Y` and press Enter.
+
+It may also ask which project to link to — select **voidance** (not voidance-react).
+
+When you see `Aliased: https://voidance.vercel.app` — it's live. ✅
+
+---
+
+### Step 5 — Fix GitHub push error (if it occurs)
+
+If `git push` fails with:
+```
+remote: error: GH007: Your push would publish a private email address
+push declined due to email privacy restrictions
+```
+
+Fix it by using your GitHub private email:
+
+**1. Get your private email** — go to https://github.com/settings/emails
+and copy the email under **"Keep my email addresses private"**.
+It looks like: `123456789+username@users.noreply.github.com`
+
+**2. Set it in git on this machine:**
+```bash
+git config --global user.email "123456789+username@users.noreply.github.com"
+```
+
+**3. Fix the last rejected commit and push again:**
+```bash
+git commit --amend --reset-author --no-edit
+git push
+```
+
+---
+
 ## Deploying to Vercel
 
 There are two ways to deploy depending on whether audio files are involved.
