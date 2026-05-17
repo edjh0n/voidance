@@ -11,12 +11,12 @@ export const BAND = {
 
 // ── Members ─────────────────────────────────────────────────────
 export const MEMBERS = [
-  { initials: 'JG',  role: 'Vocals', name: 'Jayke Garganera',  socials: {} },
-  { initials: 'RY',  role: 'Guitar', name: 'Rovalle Yraola',   socials: {} },
-  { initials: 'EB',  role: 'Guitar', name: 'Erik Bombeza',     socials: {} },
-  { initials: 'EJB', role: 'Guitar', name: 'Ed Jan Baquero',   socials: {} },
-  { initials: 'AB',  role: 'Bass',   name: 'Adrian Buquis',    socials: {} },
-  { initials: 'ER',  role: 'Drums',  name: 'Elizier Roca',     socials: {} },
+  { initials: 'JG',  role: 'Vocals', name: 'Mort Brian Apostol',    socials: {} },
+  { initials: 'RY',  role: 'Guitar', name: 'Rovalle Yraola',        socials: {} },
+  { initials: 'EB',  role: 'Guitar', name: 'Erik Bombeza',          socials: {} },
+  { initials: 'EJB', role: 'Guitar', name: 'Ed Jan Baquero',        socials: {} },
+  { initials: 'AB',  role: 'Bass',   name: 'Adrian Buquis',         socials: {} },
+  { initials: 'ER',  role: 'Drums',  name: 'Elizier Roca',          socials: {} },
 ]
 
 // ── Albums ──────────────────────────────────────────────────────
@@ -29,6 +29,7 @@ export const ALBUMS = [
 // ── Tour dates ───────────────────────────────────────────────────
 export const TOUR_DATES = [
   { date: 'APRIL 18', year: '2026', venue: 'Roadhouse Rock & Dine', location: 'San Fernando, Cebu, Philippines',       status: 'sold-out' },
+  { date: 'MAY 16',   year: '2026', venue: 'Quady\'s Bar',              location: 'Cebu City, Cebu, Philippines',          status: 'sold-out' },
 ]
 
 // ── Social media links ───────────────────────────────────────────

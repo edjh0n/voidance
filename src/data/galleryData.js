@@ -15,7 +15,7 @@ export const GALLERY = [
   // ── Photos (replace placeholders with real event photos) ──────────
   {
     type:    'placeholder',
-    caption: 'First gig photo — coming soon',
+    caption: 'First gig photo',
     event:   '',
     // Replace with real photo:
     type:    'image',
@@ -23,6 +23,17 @@ export const GALLERY = [
     thumb:   '/images/events/gig-2026-04-18.jpg',
     caption: 'Live at Roadhouse Rock & Dine — April 18, 2026',
     event:   'Pitalo Noise',
+  },
+  {
+    type:    'placeholder',
+    caption: 'Second gig photo',
+    event:   'Mosh with the Underground',
+    // Replace with real photo:
+    type:    'image',
+    src:     '/images/events/gig-2026-05-16.jpg',
+    thumb:   '/images/events/gig-2026-05-16.jpg',
+    caption: 'Live at Quady\'s Bar — May 16, 2026',
+    event:   'Replica Music Production',
   },
   // {
   //   type:    'placeholder',
@@ -55,6 +66,30 @@ export const GALLERY = [
     videoId: 'KZ0QZHibRqA', // ← replace with your real YouTube video ID
     caption: 'Voidance - Rapture',
     event:   'Live @ Roadhouse Rock & Dine',
+  },
+  {
+    type:    'video',
+    videoId: 'rNYLZIXmIOs', // ← replace with your real YouTube video ID
+    caption: 'Voidance - Proliferate',
+    event:   'Live @ Quady\'s Bar',
+  },
+  {
+    type:    'video',
+    videoId: 'BEWQtq5pM6o', // ← replace with your real YouTube video ID
+    caption: 'Voidance - Rapture',
+    event:   'Live @ Quady\'s Bar',
+  },
+  {
+    type:    'video',
+    videoId: 'wWaAujU_mG0', // ← replace with your real YouTube video ID
+    caption: 'Voidance - The Great Boundaries',
+    event:   'Live @ Quady\'s Bar',
+  },
+  {
+    type:    'video',
+    videoId: '4uwZf6B4Z84', // ← replace with your real YouTube video ID
+    caption: 'Voidance - Rain',
+    event:   'Live @ Quady\'s Bar',
   },
   // {
   //   type:    'video',
