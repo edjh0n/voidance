@@ -28,7 +28,12 @@ export class AudioEngine {
   }
 
   stop() {
-    if (this._audio) { this._audio.pause(); this._audio.src = ''; this._audio = null }
+    if (this._audio) {
+      this._audio.pause()
+      this._audio.src = ''
+      this._detachAudio(this._audio)
+      this._audio = null
+    }
     if (this._rhythmTimer) { clearInterval(this._rhythmTimer); this._rhythmTimer = null }
     this._synthNodes.forEach(n => {
       try { if (n.stop) n.stop() } catch (_) {}
@@ -119,8 +124,10 @@ export class AudioEngine {
       audio.preload  = 'auto'
       audio.volume   = Math.max(0, Math.min(1, volume))
       audio.src      = track.audioSrc
+      this._attachAudio(audio)
       audio.load()
       audio.play().catch(() => {
+        this._detachAudio(audio)
         this._audio = null
         this._playSynth(track, volume)
       })
@@ -148,20 +155,33 @@ export class AudioEngine {
       this._audio.addEventListener('ended', cb, { once: true })
   }
 
+  // Attach audio element to DOM — required by Firefox and strict mobile browsers.
+  // Some browsers block play() on detached Audio elements entirely.
+  _attachAudio(audio) {
+    audio.style.display = 'none'
+    document.body.appendChild(audio)
+  }
+
+  _detachAudio(audio) {
+    try { if (audio.parentNode) audio.parentNode.removeChild(audio) } catch (_) {}
+  }
+
   _playReal(track, volume) {
     this._mode    = 'real'
     const audio   = new Audio()
     audio.preload = 'auto'
-    audio.volume  = Math.max(0, Math.min(1, volume)) // full vol so browser commits to load
+    audio.volume  = Math.max(0, Math.min(1, volume))
     audio.src     = track.audioSrc
+    this._attachAudio(audio)  // must be in DOM before play() for Firefox + mobile
     audio.load()
     audio.play().catch(() => {
       console.warn(`[AudioEngine] Could not play ${track.audioSrc}, falling back to synth`)
+      this._detachAudio(audio)
       this._audio = null
       this._playSynth(track, volume)
     })
     this._audio = audio
-    // Fade in: drop to 0 after play() is called, then ramp up
+    // Fade in after play() — drop to 0 then ramp up
     audio.volume = 0
     const steps = 20, intervalMs = 400 / steps
     let step = 0
