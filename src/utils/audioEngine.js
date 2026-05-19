@@ -117,30 +117,29 @@ export class AudioEngine {
       }, XFADE_MS)
     }
 
-    // Start new track with fade in
+    // Start new track
     if (track.audioSrc) {
-      this._mode     = 'real'
-      const audio    = new Audio()
-      audio.preload  = 'auto'
-      audio.volume   = Math.max(0, Math.min(1, volume))
-      audio.src      = track.audioSrc
+      this._mode    = 'real'
+      const audio   = new Audio()
+      audio.preload = 'auto'
+      audio.src     = track.audioSrc
+      audio.volume  = Math.max(0, Math.min(1, volume))
       this._attachAudio(audio)
-      audio.load()
-      audio.play().catch(() => {
+      audio.play().then(() => {
+        audio.volume = 0
+        const intervalMs = XFADE_MS / XFADE_STEPS
+        let step = 0
+        const timer = setInterval(() => {
+          step++
+          audio.volume = Math.max(0, Math.min(1, volume * step / XFADE_STEPS))
+          if (step >= XFADE_STEPS) { clearInterval(timer); audio.volume = volume }
+        }, intervalMs)
+      }).catch(() => {
         this._detachAudio(audio)
         this._audio = null
         this._playSynth(track, volume)
       })
-      this._audio    = audio
-      audio.volume   = 0
-      // Ramp new audio up
-      const intervalMs = XFADE_MS / XFADE_STEPS
-      let step = 0
-      const timer = setInterval(() => {
-        step++
-        audio.volume = Math.max(0, Math.min(1, volume * step / XFADE_STEPS))
-        if (step >= XFADE_STEPS) { clearInterval(timer); audio.volume = volume }
-      }, intervalMs)
+      this._audio = audio
     } else {
       this._playSynth(track, volume)
     }
@@ -170,26 +169,28 @@ export class AudioEngine {
     this._mode    = 'real'
     const audio   = new Audio()
     audio.preload = 'auto'
-    audio.volume  = Math.max(0, Math.min(1, volume))
     audio.src     = track.audioSrc
-    this._attachAudio(audio)  // must be in DOM before play() for Firefox + mobile
-    audio.load()
-    audio.play().catch(() => {
-      console.warn(`[AudioEngine] Could not play ${track.audioSrc}, falling back to synth`)
+    audio.volume  = Math.max(0, Math.min(1, volume))
+    this._attachAudio(audio)
+    // Do NOT call audio.load() — it resets readyState and breaks
+    // Firefox's user gesture chain, causing play() to be rejected.
+    audio.play().then(() => {
+      // Confirmed playing — now fade in from silence
+      audio.volume = 0
+      const steps = 20, intervalMs = 400 / steps
+      let step = 0
+      const timer = setInterval(() => {
+        step++
+        audio.volume = Math.max(0, Math.min(1, volume * step / steps))
+        if (step >= steps) { clearInterval(timer); audio.volume = volume }
+      }, intervalMs)
+    }).catch(err => {
+      console.warn(`[AudioEngine] play() failed: ${err.name} — ${err.message}`)
       this._detachAudio(audio)
       this._audio = null
       this._playSynth(track, volume)
     })
     this._audio = audio
-    // Fade in after play() — drop to 0 then ramp up
-    audio.volume = 0
-    const steps = 20, intervalMs = 400 / steps
-    let step = 0
-    const timer = setInterval(() => {
-      step++
-      audio.volume = Math.max(0, Math.min(1, volume * step / steps))
-      if (step >= steps) { clearInterval(timer); audio.volume = volume }
-    }, intervalMs)
   }
 
   _bootCtx(volume) {
