@@ -11,12 +11,12 @@ export const BAND = {
 
 // ── Members ─────────────────────────────────────────────────────
 export const MEMBERS = [
-  { initials: 'JG',  role: 'Vocals', name: 'Mort Brian Apostol',    socials: {} },
-  { initials: 'RY',  role: 'Guitar', name: 'Rovalle Yraola',        socials: {} },
-  { initials: 'EB',  role: 'Guitar', name: 'Erik Bombeza',          socials: {} },
-  { initials: 'EJB', role: 'Guitar', name: 'Ed Jan Baquero',        socials: {} },
-  { initials: 'AB',  role: 'Bass',   name: 'Adrian Buquis',         socials: {} },
-  { initials: 'ER',  role: 'Drums',  name: 'Elizier Roca',          socials: {} },
+  { initials: 'MBA',  role: 'Vocals', name: 'Mort Brian Apostol',    socials: {} },
+  { initials: 'RY',  role: 'Guitar', name: 'Rovalle Yraola',         socials: {} },
+  { initials: 'EB',  role: 'Guitar', name: 'Erik Bombeza',           socials: {} },
+  { initials: 'EJB', role: 'Guitar', name: 'Ed Jan Baquero',         socials: {} },
+  { initials: 'AB',  role: 'Bass',   name: 'Adrian Buquis',          socials: {} },
+  { initials: 'ER',  role: 'Drums',  name: 'Elizier Roca',           socials: {} },
 ]
 
 // ── Albums ──────────────────────────────────────────────────────
