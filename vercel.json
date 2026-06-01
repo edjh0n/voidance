@@ -2,33 +2,62 @@
   "github": {
     "silent": true
   },
-  "ignoreCommand": "exit 0",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ],
   "headers": [
     {
       "source": "/music/(.*)\\.mp3",
       "headers": [
-        { "key": "Content-Type",  "value": "audio/mpeg" },
-        { "key": "Accept-Ranges", "value": "bytes" },
-        { "key": "Cache-Control", "value": "public, max-age=86400" }
+        {
+          "key": "Content-Type",
+          "value": "audio/mpeg"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
       ]
     },
     {
       "source": "/music/(.*)\\.wav",
       "headers": [
-        { "key": "Content-Type",  "value": "audio/wav" },
-        { "key": "Accept-Ranges", "value": "bytes" },
-        { "key": "Cache-Control", "value": "public, max-age=86400" }
+        {
+          "key": "Content-Type",
+          "value": "audio/wav"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
       ]
     },
     {
       "source": "/music/(.*)\\.ogg",
       "headers": [
-        { "key": "Content-Type",  "value": "audio/ogg" },
-        { "key": "Accept-Ranges", "value": "bytes" },
-        { "key": "Cache-Control", "value": "public, max-age=86400" }
+        {
+          "key": "Content-Type",
+          "value": "audio/ogg"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
       ]
     }
   ]
