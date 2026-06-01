@@ -3,9 +3,16 @@ node_modules/
 
 # Build output
 dist/
+build/
 
 # Vite cache
 .vite/
+
+# Sanity Studio cache & runtime
+.sanity/
+
+# Vercel
+.vercel
 
 # Local env files
 .env
@@ -19,29 +26,21 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
-# ── Media files — excluded from GitHub ──────────────────────────────
-# GitHub rejects files over 100MB and warns on files over 50MB.
-# Audio and image files must be managed manually across machines.
-# See README.md → "Managing Large Media Files" for instructions.
-
-# Audio files (music player)
+# ---- Local media fallback files ----
+# Primary content now lives in Sanity CMS (served from CDN).
+# These local copies are an offline fallback only; not committed.
 public/music/*.mp3
 public/music/*.wav
 public/music/*.ogg
 public/music/*.flac
 public/music/*.aac
 public/music/*.m4a
-
-# Event photos (gallery)
 public/images/events/*.jpg
 public/images/events/*.jpeg
 public/images/events/*.png
 public/images/events/*.webp
 public/images/events/*.gif
 
-# Keep the README files inside those folders
+# Keep folder READMEs
 !public/music/README.md
 !public/images/events/README.md
-
-.vercel
-.env*.local

@@ -1,417 +1,61 @@
 # VOIDANCE — Band Website
 
-Progressive Metal / Djent band website for **Voidance** (Cebu City, Philippines),
-built with **React 18 + Vite 7**.
+Progressive Metal band website for **Voidance** (Cebu City, Philippines),
+built with **React 18 + Vite 7** and powered by **Sanity CMS** for content.
+
+- **Live site:** https://voidance.vercel.app
+- **Admin panel (CMS):** https://voidance-studio.vercel.app
+- **GitHub repo:** https://github.com/edjh0n/voidance
+
+---
+
+## How It Works (Architecture)
+
+The project has two parts that work together:
+
+```
+┌─────────────────────────┐        ┌──────────────────────────┐
+│   Sanity Studio (CMS)   │        │   React Site (frontend)  │
+│  voidance-studio        │ ─────► │  voidance.vercel.app     │
+│  .vercel.app            │ fetch  │                          │
+│                         │        │  Reads content live      │
+│  You add content here   │        │  from Sanity on load     │
+└─────────────────────────┘        └──────────────────────────┘
+            │
+            ▼
+   ┌──────────────────┐
+   │  Sanity CDN      │  ← stores uploaded photos + MP3 audio
+   └──────────────────┘
+```
+
+- **Content** (gallery photos/videos, media videos, tracks, tour dates) lives in
+  **Sanity** and is edited from the admin panel — no code needed.
+- **Audio and images** are uploaded through the admin panel and served from
+  **Sanity's CDN** — no more deploying large files to Vercel.
+- The React site fetches content from Sanity on page load. If Sanity is
+  unreachable, it falls back to the static data in `src/data/`.
+
+---
+
+## Tech Stack
+
+| Layer | Tech |
+|-------|------|
+| Frontend | React 18 + Vite 7 |
+| Styling | Plain CSS (`src/styles/index.css`) |
+| CMS | Sanity v3 (Studio + Content Lake) |
+| Hosting | Vercel (both site and studio) |
+| Audio | Web Audio API + HTML5 Audio, files on Sanity CDN |
 
 ---
 
 ## Requirements
 
-| Tool    | Minimum Version | Check Command | Download               |
-|---------|-----------------|---------------|------------------------|
-| Node.js | v18 or higher   | `node -v`     | https://nodejs.org     |
-| npm     | v9 or higher    | `npm -v`      | Comes with Node.js     |
-
----
-
-## Cloning on a New Machine
-
-Use this when you want to work on the project from a different computer.
-
-### Step 1 — Install the requirements
-
-Make sure **Node.js v18+** and **Git** are installed on the new machine:
-
-| Tool    | Download                        |
-|---------|---------------------------------|
-| Node.js | https://nodejs.org              |
-| Git     | https://git-scm.com/downloads   |
-
-Verify after installing:
-```bash
-node -v
-git --version
-```
-
----
-
-### Step 2 — Clone the repository
-
-```bash
-git clone https://github.com/edjh0n/voidance.git
-```
-
-This creates a `voidance/` folder with all project files.
-
----
-
-### Step 3 — Install dependencies
-
-```bash
-cd voidance
-npm install
-```
-
-> `node_modules/` is not stored in GitHub — this step recreates it locally.
-> It may take 30–60 seconds the first time.
-
----
-
-### Step 4 — Run the dev server
-
-```bash
-npm run dev
-```
-
-Open **`http://localhost:5173`** in your browser. Done!
-
----
-
-### Step 5 — Restore your media files *(if needed)*
-
-These folders are excluded from GitHub (listed in `.gitignore`).
-Copy them manually from your other machine if you had real files:
-
-| Folder                    | What goes here         |
-|---------------------------|------------------------|
-| `public/music/`           | `.mp3` / `.wav` files  |
-| `public/images/events/`   | Event / gig photos     |
-
----
-
-### Pushing changes back to GitHub
-
-After editing on the new machine:
-
-```bash
-git add .
-git commit -m "describe your change"
-git push
-```
-
-Vercel will auto-redeploy the live site within 30 seconds.
-
----
-
-### Pulling latest changes on your original machine
-
-When you switch back to your original machine and want the latest code:
-
-```bash
-cd C:\Users\ebaquero\voidance-react
-git pull
-```
-
----
-
-## Pulling Updates from GitHub
-
-Use this whenever someone has pushed new changes to the repository
-and you want to get them on your current machine.
-
-### The simple case — no local changes
-
-If you haven't changed anything locally, one command is all you need:
-
-```bash
-cd C:\Users\ebaquero\voidance-react
-git pull
-```
-
-That fetches the latest code and merges it automatically.
-
----
-
-### If you have local changes too
-
-If you've been editing files locally AND someone pushed to GitHub,
-Git will warn you about a conflict. Handle it in this order:
-
-**Option A — Save your local changes first, then pull (recommended)**
-
-```bash
-git stash          # temporarily shelves your local changes
-git pull           # gets the latest from GitHub
-git stash pop      # re-applies your local changes on top
-```
-
-If there are conflicts after `stash pop`, Git will mark the affected
-files. Open them, look for the `<<<<<<` markers, edit to keep what you
-want, then save.
-
-**Option B — Commit your local changes first, then pull**
-
-```bash
-git add .
-git commit -m "my local changes"
-git pull
-```
-
-Git will attempt an automatic merge. If it can't, resolve the conflicts
-manually then run:
-
-```bash
-git add .
-git commit -m "merge resolved"
-```
-
----
-
-### Checking what changed before you pull
-
-To see what's new on GitHub without actually applying it yet:
-
-```bash
-git fetch
-git log HEAD..origin/main --oneline
-```
-
-This shows you a list of commits that are on GitHub but not on your
-machine yet. Then run `git pull` when you're ready.
-
----
-
-### Quick reference
-
-| Command                          | What it does                                    |
-|----------------------------------|-------------------------------------------------|
-| `git pull`                       | Fetch + merge latest from GitHub                |
-| `git fetch`                      | Fetch only — doesn't change your files          |
-| `git log HEAD..origin/main --oneline` | See what's new on GitHub before pulling   |
-| `git stash`                      | Temporarily save local changes                  |
-| `git stash pop`                  | Restore stashed changes after pulling           |
-| `git status`                     | Show what files you've changed locally          |
-| `git diff`                       | Show exactly what lines you've changed          |
-
----
-
-## First-Time Setup
-
-Run this **once** after cloning or extracting the project:
-
-```bash
-cd C:\Users\ebaquero\voidance-react
-npm install
-```
-
----
-
-## Running the Dev Server
-
-```bash
-cd C:\Users\ebaquero\voidance-react
-npm run dev
-```
-
-Open your browser at **`http://localhost:5173`**
-*(Vite auto-picks the next port if 5173 is busy — check terminal output)*
-
-**Stop the server:** `Ctrl + C`
-
----
-
-## Available Commands
-
-| Command           | What it does                                      |
-|-------------------|---------------------------------------------------|
-| `npm install`     | Install / restore all dependencies                |
-| `npm run dev`     | Start local dev server with hot reload            |
-| `npm run build`   | Build optimised production files into `dist/`     |
-| `npm run preview` | Preview the production build at localhost:4173    |
-
----
-
-## Setting Up Vercel on a New Machine
-
-Do this **once** on every new machine before you can deploy.
-
----
-
-### Step 1 — Install Vercel CLI
-
-Open a terminal and run:
-```bash
-npm install -g vercel
-```
-Wait for it to finish. Verify it worked:
-```bash
-vercel --version
-```
-
----
-
-### Step 2 — Log in to Vercel
-
-```bash
-vercel login
-```
-
-The terminal will show something like:
-```
-Visit https://vercel.com/oauth/device?user_code=XXXX-XXXX
-Waiting for authentication...
-```
-
-1. Copy the URL and open it in your browser
-2. Log in with your Vercel account and click **Approve**
-3. Come back to the terminal — it will say `Congratulations! You are now signed in.`
-
-You only need to do this once per machine.
-
----
-
-### Step 3 — Copy your audio files
-
-Audio files are not on GitHub, so you need to copy them manually to the new machine.
-Place them in the exact same folder:
-```
-public/music/contrite.mp3
-public/music/rapture.mp3
-public/music/the-great-boundaries.mp3
-```
-
-Use a USB drive, Google Drive, or any file transfer method.
-
----
-
-### Step 4 — Deploy
-
-```bash
-cd C:\path\to\your\voidance
-vercel --prod --yes
-```
-
-The first time you run this on a new machine, it may ask:
-```
-Set up and deploy? [Y/n]
-```
-Type `Y` and press Enter.
-
-It may also ask which project to link to — select **voidance** (not voidance-react).
-
-When you see `Aliased: https://voidance.vercel.app` — it's live. ✅
-
----
-
-### Step 5 — Fix GitHub push error (if it occurs)
-
-If `git push` fails with:
-```
-remote: error: GH007: Your push would publish a private email address
-push declined due to email privacy restrictions
-```
-
-Fix it by using your GitHub private email:
-
-**1. Get your private email** — go to https://github.com/settings/emails
-and copy the email under **"Keep my email addresses private"**.
-It looks like: `123456789+username@users.noreply.github.com`
-
-**2. Set it in git on this machine:**
-```bash
-git config --global user.email "123456789+username@users.noreply.github.com"
-```
-
-**3. Fix the last rejected commit and push again:**
-```bash
-git commit --amend --reset-author --no-edit
-git push
-```
-
----
-
-## Deploying to Vercel
-
-There are two ways to deploy depending on whether audio files are involved.
-
----
-
-### When to use each method
-
-| What changed | How to deploy |
-|---|---|
-| Code or content only (no audio files) | `git push` — Vercel auto-deploys |
-| Audio files added or changed | `vercel --prod` from your terminal |
-
----
-
-### Method 1 — Git push (code changes only)
-
-```bash
-cd C:\Users\ebaquero\voidance-react
-git add .
-git commit -m "describe your change"
-git push
-```
-
-Vercel detects the push and auto-deploys within ~30 seconds.
-No extra steps needed.
-
----
-
-### Method 2 — vercel --prod (audio files included)
-
-Use this whenever you add or change MP3 files in `public/music/`.
-Audio files are excluded from GitHub (in `.gitignore`), so `git push` alone
-will never include them. This command deploys directly from your local folder.
-
-**Step 1 — Open a terminal in the project folder**
-
-Press `Win + R`, type `cmd`, press Enter. Then run:
-```bash
-cd C:\Users\ebaquero\voidance-react
-```
-
-**Step 2 — Run the deploy command**
-
-```bash
-vercel --prod --yes
-```
-
-That's it. Vercel uploads everything including your MP3 files and deploys to
-**https://voidance.vercel.app** automatically.
-
-**Step 3 — Wait for it to finish**
-
-You'll see output like:
-```
-Uploading [====================] (30.9MB/30.9MB)
-Building...
-✓ built in 1.2s
-Aliased: https://voidance.vercel.app
-```
-
-When you see `Aliased: https://voidance.vercel.app` — it's live. Done.
-
----
-
-### If vercel --prod asks you to log in
-
-Run this first:
-```bash
-vercel login
-```
-
-It will give you a URL to open in your browser. Log in there, come back to the
-terminal, and it will continue automatically. You only need to do this once.
-
----
-
-### Doing both at the same time
-
-If you changed code AND audio files:
-
-```bash
-# Step 1 — push code to GitHub
-git add .
-git commit -m "your change"
-git push
-
-# Step 2 — deploy with audio files
-vercel --prod --yes
-```
-
-Always push to GitHub first so the code and audio are in sync on Vercel.
+| Tool | Minimum | Check | Download |
+|------|---------|-------|----------|
+| Node.js | v20+ | `node -v` | https://nodejs.org |
+| npm | v9+ | `npm -v` | comes with Node.js |
+| Git | any | `git --version` | https://git-scm.com |
 
 ---
 
@@ -419,43 +63,44 @@ Always push to GitHub first so the code and audio are in sync on Vercel.
 
 ```
 voidance-react/
-├── index.html                   ← HTML entry point + Google Fonts
-├── vite.config.js               ← Vite 7 + @vitejs/plugin-react config
-├── vercel.json                  ← Vercel SPA routing config
+├── index.html               ← HTML entry + Google Fonts
+├── vite.config.js
+├── vercel.json              ← SPA routing + audio headers
 ├── package.json
+├── .gitignore
 ├── public/
-│   ├── music/                   ← Drop .mp3 / .wav audio files here
-│   │   └── README.md            ← Audio file naming & format guide
-│   └── images/
-│       └── events/              ← Drop event / gig photos here
-│           └── README.md        ← Image naming & gallery guide
-└── src/
-    ├── main.jsx                 ← React app entry point
-    ├── App.jsx                  ← Root component — assembles all sections
-    ├── styles/
-    │   └── index.css            ← All styles, animations, responsive breakpoints
-    ├── data/
-    │   ├── bandData.js          ← Members, albums, tour dates, tracks, socials
-    │   └── galleryData.js       ← Gallery / carousel items (images + videos)
-    ├── utils/
-    │   ├── canvasArt.js         ← Procedural album art & video thumbnail canvas
-    │   └── audioEngine.js       ← Dual-mode audio (real file + Web Audio synth)
-    ├── hooks/
-    │   ├── useAudioPlayer.js    ← Music player state (play/pause/seek/volume)
-    │   └── useScrollReveal.js   ← IntersectionObserver scroll-reveal hook
-    └── components/
-        ├── Starfield.jsx        ← Animated canvas starfield background
-        ├── Nav.jsx              ← Desktop nav + mobile hamburger drawer
-        ├── Hero.jsx             ← Full-screen hero with glitch band name
-        ├── Gallery.jsx          ← Events & Live carousel (images + YouTube)
-        ├── About.jsx            ← Band origin, bio, and quick-facts strip
-        ├── Members.jsx          ← Band member cards with avatar initials
-        ├── Discography.jsx      ← Album grid with procedural canvas artwork
-        ├── Tour.jsx             ← Tour dates with ticket status badges
-        ├── Media.jsx            ← Featured video + sidebar video thumbnails
-        ├── Contact.jsx          ← Social links and contact info
-        ├── Footer.jsx           ← Footer
-        └── MusicPlayer.jsx      ← Sticky bottom player with playlist drawer
+│   ├── music/               ← Local MP3 fallback (gitignored)
+│   └── images/events/       ← Local photo fallback (gitignored)
+├── src/
+│   ├── main.jsx             ← App entry, scroll reset
+│   ├── App.jsx              ← Section layout
+│   ├── styles/index.css     ← All styles + responsive breakpoints
+│   ├── lib/
+│   │   └── sanity.js        ← Sanity client + GROQ queries
+│   ├── hooks/
+│   │   ├── useSanity.js     ← Generic Sanity fetch hook w/ fallback
+│   │   └── useAudioPlayer.js← Music player state + Sanity tracks
+│   ├── data/
+│   │   ├── bandData.js      ← Static config + FALLBACK content
+│   │   └── galleryData.js   ← FALLBACK gallery content
+│   ├── utils/
+│   │   ├── audioEngine.js   ← Audio playback (real + synth fallback)
+│   │   └── canvasArt.js     ← Procedural album/video art
+│   └── components/
+│       ├── Nav.jsx          Hero.jsx        Gallery.jsx (01)
+│       ├── About.jsx (02)   Members.jsx (03) Discography.jsx (04)
+│       ├── Tour.jsx (05)    Media.jsx (06)   Contact.jsx (07)
+│       ├── Footer.jsx       Starfield.jsx    MusicPlayer.jsx
+└── studio/                  ← Sanity Studio (the CMS / admin panel)
+    ├── sanity.config.js     ← Studio config (project ID, plugins)
+    ├── sanity.cli.js        ← CLI config (deploy host)
+    ├── package.json
+    └── schemas/
+        ├── index.js         ← Schema registry
+        ├── galleryItem.js   ← Gallery photos + videos
+        ├── mediaVideo.js    ← Media section videos
+        ├── track.js         ← Music player tracks + MP3 upload
+        └── tourDate.js      ← Tour dates
 ```
 
 ---
@@ -464,9 +109,9 @@ voidance-react/
 
 ```
 Hero
-├── 01 // EVENTS & LIVE    ← Gallery carousel
-├── 02 // ORIGIN           ← Band bio + facts
-├── 03 // THE VOID COLLECTIVE  ← Members
+├── 01 // EVENTS & LIVE   (Gallery carousel)
+├── 02 // ORIGIN          (About)
+├── 03 // THE VOID COLLECTIVE (Members)
 ├── 04 // DISCOGRAPHY
 ├── 05 // TOUR DATES
 ├── 06 // MEDIA
@@ -475,283 +120,235 @@ Hero
 
 ---
 
-## Band Details
+## Managing Content (Admin Panel)
 
-| Field   | Value                            |
-|---------|----------------------------------|
-| Name    | Voidance                         |
-| Origin  | Cebu City, Philippines           |
-| Formed  | 2026                             |
-| Genre   | Progressive Metal · Djent        |
-| Facebook | https://www.facebook.com/voidanceph |
+**This is the main thing you'll use day to day.** No code required.
+
+Go to **https://voidance-studio.vercel.app** and log in with GitHub.
+You'll see four content types in the sidebar:
+
+| Section | What it controls | How to add |
+|---------|------------------|------------|
+| **Gallery Item** | Events & Live carousel (01) | Upload a photo OR paste a YouTube video ID |
+| **Media Video** | Media section (06) | Paste a YouTube video ID, set one as "featured" |
+| **Track** | Music player | Type title + duration, upload the MP3 file |
+| **Tour Date** | Tour dates (05) | Fill date, venue, location, ticket status |
+
+### To add content
+1. Click the content type in the sidebar
+2. Click the **+ / compose** icon (top of the list)
+3. Fill in the fields
+4. Click **Publish** (bottom right)
+5. The change appears on the live site within seconds — no deploy needed
+
+### Important: the fallback rule
+Each section is independent. As soon as **one** item exists in a section in
+Sanity, the site shows **only** Sanity items for that section and ignores the
+static fallback in `src/data/`. So when you start managing a section in the CMS,
+add **all** the items you want there.
+
+### Finding a YouTube video ID
+The ID is the part after `?v=` in the URL:
+```
+https://www.youtube.com/watch?v=KZ0QZHibRqA
+                                ^^^^^^^^^^^ this is the ID
+```
+
+### Adding a new track (audio)
+1. Studio → **Track** → compose new
+2. Title (e.g. `NEW SONG`), Album, Duration **in seconds** (3:45 = 225)
+3. Under **Audio File**, upload the MP3 (it goes to Sanity's CDN)
+4. Set **Playlist Order** and **Publish**
+
+That's it — **no `vercel --prod` needed for audio anymore.** The MP3 is served
+from Sanity's CDN.
 
 ---
 
-## Editing Content
+## Local Development
 
-### Band info, members, albums, tour dates, socials, tracks
-```
-src/data/bandData.js
-```
-All content is centralised here. Edit this file — no component changes needed.
+First-time setup after cloning:
 
-### Gallery (events & live)
-```
-src/data/galleryData.js
-```
-Add, remove, or reorder carousel items here.
-
----
-
-## Adding Real Music Files
-
-> ⚠️ **Use MP3, not WAV for production.**
-> WAV is uncompressed — a 3-minute song can be 30–50MB and longer tracks can
-> exceed Vercel's 100MB file limit. MP3 is 10× smaller with no noticeable
-> quality difference for web streaming. Convert with Audacity (free) or any
-> online converter.
-
-1. Convert your track to MP3 if it isn't already
-2. Drop the file into `public/music/` (e.g. `contrite.mp3`)
-3. Open `src/data/bandData.js` and set `audioSrc` on the matching track:
-
-```js
-audioSrc: '/music/contrite.mp3',
-```
-
-The player auto-detects the file. If missing, it silently falls back to the
-built-in Web Audio synth.
-
-> ⚠️ **Do not push audio files to GitHub.** They are excluded in `.gitignore`.
-> See **Managing Large Media Files** below for how to handle them.
-
-### Deploying audio files to Vercel
-
-Because audio files are excluded from GitHub, Vercel's auto-deploy from GitHub
-will **not** include them. You have two options:
-
-**Option A — Deploy locally with Vercel CLI (simplest)**
 ```bash
-cd C:\Users\ebaquero\voidance-react
-vercel --prod
+cd voidance-react
+npm install            # install site dependencies
+npm run dev            # start dev server → http://localhost:5173
 ```
-This deploys from your local folder and includes the audio files directly.
-The `vercel.json` file already has the correct `Accept-Ranges` and
-`Content-Type` headers configured so audio streams properly.
 
-**Option B — Host audio on a CDN (best for teams)**
-Upload audio files to a CDN (Cloudflare R2, AWS S3, Bunny.net) and point
-`audioSrc` at the public URL:
-```js
-audioSrc: 'https://your-cdn.com/voidance/contrite.mp3',
+The dev server reads live content from Sanity (CORS is already configured for
+`localhost:5173` and `5174`).
+
+### Running the Studio locally (optional)
+You normally use the hosted studio, but to run it locally:
+```bash
+cd studio
+npm install
+npm run dev            # → http://localhost:3333
 ```
-This way GitHub push → Vercel auto-deploy works for everything else,
-and audio is served fast from a dedicated CDN.
+
+### Available commands
+
+Site (run from project root):
+| Command | Does |
+|---------|------|
+| `npm run dev` | Dev server with hot reload |
+| `npm run build` | Production build into `dist/` |
+| `npm run preview` | Preview the production build |
+
+Studio (run from `studio/`):
+| Command | Does |
+|---------|------|
+| `npm run dev` | Local studio at :3333 |
+| `npm run build` | Build studio into `studio/dist/` |
 
 ---
 
-## Setting Up the Media Section Videos
+## Deploying
 
-The **Media** section (06 //) supports **YouTube videos only**.
-Local video files are not recommended — they are too large for GitHub and Vercel.
-YouTube handles hosting, streaming, and quality for free.
+### The simple rule
 
-### How to find a YouTube video ID
+| What changed | How to deploy |
+|--------------|---------------|
+| **Content** (photos, videos, tracks, tour dates) | Nothing! Publish in the studio — it's instant |
+| **Site code / design** | `git push` (Vercel auto-deploys) |
+| **Studio schema** (new content fields) | rebuild + redeploy the studio (below) |
 
-Take any YouTube URL and copy the part after `?v=`:
+Because all content and media now live in Sanity, **you almost never need to
+deploy manually anymore.** Day-to-day content updates happen entirely in the
+admin panel.
 
+### Deploying site code changes
+```bash
+git add .
+git commit -m "describe your change"
+git push
 ```
-https://www.youtube.com/watch?v=dQw4w9WgXcQ
-                                ^^^^^^^^^^^^ this is the video ID
+Vercel auto-deploys the site within ~30 seconds.
+
+### Deploying the studio (only when schemas change)
+Only needed if you edit files in `studio/schemas/`:
+```bash
+cd studio
+npm run build
+vercel dist --prod --yes
 ```
+This redeploys https://voidance-studio.vercel.app.
 
-### How to add a video
-
-Open `src/data/bandData.js` and find the `VIDEOS` array.
-Set `youtubeId` on the video you want to update:
-
-```js
-export const VIDEOS = [
-  {
-    id:        'vid1',
-    title:     'PERIHELION — Official Video', // displayed below the thumbnail
-    meta:      'The Dying Frequency · 2026',  // small subtitle text
-    hue:       200,                           // placeholder colour (ignored once youtubeId is set)
-    featured:  true,                          // true = large left slot, false = small right sidebar
-    youtubeId: 'dQw4w9WgXcQ',               // ← paste your YouTube video ID here
-  },
-  ...
-]
-```
-
-### What happens when `youtubeId` is set
-
-- The thumbnail automatically uses the **real YouTube thumbnail image**
-- The **play button** becomes a clickable link that opens the video on YouTube
-- A **"Watch on YouTube ↗"** text link appears below the title
-- No extra files or setup needed
-
-### What happens when `youtubeId` is `null`
-
-- A generated dark canvas thumbnail is shown (placeholder)
-- The play button is decorative only (does nothing)
-- Safe to leave as `null` until you have a real video ready
-
-### Layout
-
-The Media section layout adapts based on how many videos you have:
-
-**1–3 videos** — Classic layout:
-```
-┌──────────────────────┬──────────┐
-│                      │ Video 2  │
-│   Featured (large)   ├──────────┤
-│                      │ Video 3  │
-└──────────────────────┴──────────┘
-```
-
-**4+ videos** — Classic layout + overflow grid below:
-```
-┌──────────────────────┬──────────┐
-│                      │ Video 2  │
-│   Featured (large)   ├──────────┤
-│                      │ Video 3  │
-└──────────────────────┴──────────┘
-┌──────────┬───────────┬──────────┐
-│ Video 4  │  Video 5  │ Video 6  │  ← 3-column grid (2 on tablet, 1 on mobile)
-└──────────┴───────────┴──────────┘
-```
-
-Set `featured: true` on exactly **one** video and `featured: false` on all others.
-
-> The Media section is different from the **Gallery (Events & Live)** section.
-> Gallery = event photos + live videos in a carousel.
-> Media = curated YouTube video links in a fixed layout.
+> Note: the built-in `sanity deploy` command currently has a CLI bug
+> (`uploadSchema is not a function`), so we deploy the studio's built `dist/`
+> folder to Vercel instead. This is why the studio is hosted on
+> `voidance-studio.vercel.app` rather than `*.sanity.studio`.
 
 ---
 
-## Managing Large Media Files
+## First-Time Vercel Setup (new machine)
 
-GitHub **rejects files over 100MB** and warns on files over 50MB.
-Audio files (`.mp3`, `.wav`) and high-res photos can easily exceed this limit,
-so they are excluded from the repository via `.gitignore`.
+Do this once per machine before you can deploy.
 
-### What is excluded
-```
-public/music/*.mp3   (and .wav, .ogg, .flac, .aac, .m4a)
-public/images/events/*.jpg   (and .jpeg, .png, .webp, .gif)
+```bash
+npm install -g vercel     # install Vercel CLI
+vercel login              # log in (opens browser)
 ```
 
-### How to move media between machines
-
-Since these files aren't in GitHub, you need to copy them manually:
-
-**Option A — USB drive / external storage**
-Copy the two folders to a drive and paste them on the new machine:
-```
-public/music/
-public/images/events/
-```
-
-**Option B — Cloud storage (Google Drive, Dropbox, OneDrive)**
-Upload the two folders and sync them on the other machine.
-Keep the same folder structure so the paths in `bandData.js` still work.
-
-**Option C — Git LFS (for teams, advanced)**
-Git Large File Storage tracks large files separately from normal Git.
-Install it with `git lfs install` — see https://git-lfs.com for setup.
-This is only worth setting up if multiple people are regularly updating media.
-
-### Hosting audio on a CDN (best for production)
-
-For the live Vercel site, the cleanest approach is to host audio files
-on a CDN (e.g. Cloudflare R2, AWS S3, Bunny.net) and point `audioSrc`
-at the public URL instead of a local path:
-
-```js
-// Instead of a local path:
-audioSrc: '/music/perihelion.mp3',
-
-// Use a CDN URL:
-audioSrc: 'https://your-cdn.com/voidance/perihelion.mp3',
-```
-
-This also means visitors download audio from a fast CDN rather than
-from Vercel's server.
+When deploying the site for the first time on a machine, it may ask to link a
+project — choose **voidance** (not voidance-studio).
 
 ---
 
-## Adding Gallery Photos & Videos
+## First-Time Sanity Setup (new machine)
 
-### Local photos
-1. Drop images into `public/images/events/`
-2. Add an entry to `src/data/galleryData.js`:
+Only needed if you want to manage content via CLI or run the studio locally.
+For normal content editing, just use the hosted admin panel — no setup needed.
 
-```js
-{
-  type:    'image',
-  src:     '/images/events/gig-cebu.jpg',
-  thumb:   '/images/events/gig-cebu.jpg',
-  caption: 'Live at Cebu — 2026',
-  event:   'Cebu Underground Fest',
-},
+```bash
+npm install -g sanity     # install Sanity CLI
+sanity login              # log in with GitHub (opens browser)
 ```
 
-### YouTube videos
-```js
-{
-  type:    'video',
-  videoId: 'YOUTUBE_ID_HERE',   // part after ?v= in the URL
-  caption: 'Live at Cebu — Full Set',
-  event:   'Cebu Underground Fest',
-},
+Project details:
+- **Project ID:** `zx2gw68l`
+- **Dataset:** `production`
+- **Manage at:** https://www.sanity.io/manage
+
+---
+
+## Working Across Machines (Git)
+
+### Get the latest code
+```bash
+git pull
 ```
 
-The carousel handles any number of mixed images and videos.
-Filter tabs (All / Photos / Videos) and a thumbnail strip appear automatically.
-See `public/images/events/README.md` for the full guide.
+### If git push is rejected for email privacy
+GitHub may block a push that exposes a private email. Fix once per machine:
+1. Get your private email at https://github.com/settings/emails
+   (looks like `123456789+username@users.noreply.github.com`)
+2. Set it:
+   ```bash
+   git config --global user.email "123456789+username@users.noreply.github.com"
+   ```
+3. Re-commit and push:
+   ```bash
+   git commit --amend --reset-author --no-edit
+   git push
+   ```
 
 ---
 
 ## Music Player
 
-- Plays real audio files when `audioSrc` is set
-- Falls back to procedural Web Audio synth when no file is provided
-- Controls: play/pause, prev/next, seekable progress bar, volume, mute
-- Playlist drawer with full tracklist
-- Mini spectrum visualiser
+- Plays real MP3s served from Sanity CDN
+- Falls back to a procedural Web Audio synth if a track has no audio file
+- Fade in on play, fade out on pause, crossfade between tracks
+- Controls: play/pause, prev/next, seek, volume, mute, playlist drawer
+- Cross-browser support (Chrome, Firefox, Brave, mobile)
 
 ---
 
-## Activating Commented-Out Content
+## Fallback Data
 
-| What                       | Where                                        |
-|----------------------------|----------------------------------------------|
-| Email address              | `src/components/Contact.jsx`                 |
-| Booking email              | `src/components/Contact.jsx`                 |
-| Instagram / YouTube / etc. | `src/data/bandData.js` → set `active: true`  |
-| Member individual socials  | `src/components/Members.jsx`                 |
-| Management / label info    | `src/components/Footer.jsx`                  |
+The files in `src/data/` (`bandData.js`, `galleryData.js`) are **offline
+fallbacks** — used only if Sanity returns nothing. Static items that aren't
+managed in the CMS also live here:
+
+- **Always from `bandData.js`:** band identity, members, albums, social links,
+  album-art colour palettes
+- **Fallback only (CMS is primary):** tracks, media videos, tour dates, gallery
+
+You normally never edit these. Update content in the admin panel instead.
 
 ---
 
 ## Troubleshooting
 
+**Content not showing / site looks empty**
+- Check the item is **Published** (not draft) in the studio
+- Hard refresh the browser (`Ctrl+Shift+R`)
+
+**New audio won't play**
+- Confirm the MP3 uploaded fully in the studio Track document
+- Confirm Duration (seconds) is set correctly
+
 **`npm install` fails**
-- Confirm Node.js v18+: `node -v`
-- Clear cache: `npm cache clean --force` then retry
+- Confirm Node.js v20+: `node -v`
+- Clear cache: `npm cache clean --force`, then retry
 
 **Port already in use**
-- Vite auto-picks the next available port — check terminal for the URL
+- Vite auto-picks the next free port — check the terminal for the URL
 
-**Blank page or console errors**
-- Open DevTools (`F12`) → Console tab
-- Make sure `npm install` was run before `npm run dev`
+**Studio shows a schema warning**
+- If you changed `studio/schemas/`, rebuild + redeploy the studio (see Deploying)
 
-**Fonts not loading**
-- Google Fonts requires an internet connection
-- The site falls back to system fonts if offline
+---
 
-**Vite version conflict**
-- This project is pinned to Vite 7 (`^7.0.0`) in `package.json`
-- Do not upgrade to Vite 8 — plugin compatibility is pending
+## Quick Reference
+
+| I want to... | Where |
+|--------------|-------|
+| Add a gig photo | Studio → Gallery Item |
+| Add a live video | Studio → Gallery Item (type: video) |
+| Add a featured video | Studio → Media Video |
+| Add a song | Studio → Track (upload MP3) |
+| Add a tour date | Studio → Tour Date |
+| Change site design/text | edit code → `git push` |
+| Change band members/socials | edit `src/data/bandData.js` → `git push` |
