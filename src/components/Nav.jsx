@@ -32,7 +32,9 @@ export default function Nav() {
     <>
       {/* Nav bar */}
       <nav className={scrolled ? 'nav--scrolled' : ''}>
-        <a href="#hero" className="nav-logo">VOIDANCE</a>
+        <a href="#hero" className="nav-logo">
+          <img src="/brand/voidance-logo.svg" alt="VOIDANCE" className="nav-logo-img" />
+        </a>
 
         <ul className="nav-links">
           {LINKS.map(l => (

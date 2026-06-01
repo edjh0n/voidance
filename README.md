@@ -14,18 +14,12 @@ built with **React 18 + Vite 7** and powered by **Sanity CMS** for content.
 The project has two parts that work together:
 
 ```
-┌─────────────────────────┐        ┌──────────────────────────┐
-│   Sanity Studio (CMS)   │        │   React Site (frontend)  │
-│  voidance-studio        │ ─────► │  voidance.vercel.app     │
-│  .vercel.app            │ fetch  │                          │
-│                         │        │  Reads content live      │
-│  You add content here   │        │  from Sanity on load     │
-└─────────────────────────┘        └──────────────────────────┘
-            │
-            ▼
-   ┌──────────────────┐
-   │  Sanity CDN      │  ← stores uploaded photos + MP3 audio
-   └──────────────────┘
+Sanity Studio (CMS)  -->  React Site (frontend)
+voidance-studio           voidance.vercel.app
+.vercel.app               reads content live from Sanity on load
+      |
+      v
+  Sanity CDN  <- stores uploaded photos + MP3 audio
 ```
 
 - **Content** (gallery photos/videos, media videos, tracks, tour dates) lives in
@@ -63,44 +57,40 @@ The project has two parts that work together:
 
 ```
 voidance-react/
-├── index.html               ← HTML entry + Google Fonts
-├── vite.config.js
-├── vercel.json              ← SPA routing + audio headers
-├── package.json
-├── .gitignore
-├── public/
-│   ├── music/               ← Local MP3 fallback (gitignored)
-│   └── images/events/       ← Local photo fallback (gitignored)
-├── src/
-│   ├── main.jsx             ← App entry, scroll reset
-│   ├── App.jsx              ← Section layout
-│   ├── styles/index.css     ← All styles + responsive breakpoints
-│   ├── lib/
-│   │   └── sanity.js        ← Sanity client + GROQ queries
-│   ├── hooks/
-│   │   ├── useSanity.js     ← Generic Sanity fetch hook w/ fallback
-│   │   └── useAudioPlayer.js← Music player state + Sanity tracks
-│   ├── data/
-│   │   ├── bandData.js      ← Static config + FALLBACK content
-│   │   └── galleryData.js   ← FALLBACK gallery content
-│   ├── utils/
-│   │   ├── audioEngine.js   ← Audio playback (real + synth fallback)
-│   │   └── canvasArt.js     ← Procedural album/video art
-│   └── components/
-│       ├── Nav.jsx          Hero.jsx        Gallery.jsx (01)
-│       ├── About.jsx (02)   Members.jsx (03) Discography.jsx (04)
-│       ├── Tour.jsx (05)    Media.jsx (06)   Contact.jsx (07)
-│       ├── Footer.jsx       Starfield.jsx    MusicPlayer.jsx
-└── studio/                  ← Sanity Studio (the CMS / admin panel)
-    ├── sanity.config.js     ← Studio config (project ID, plugins)
-    ├── sanity.cli.js        ← CLI config (deploy host)
-    ├── package.json
-    └── schemas/
-        ├── index.js         ← Schema registry
-        ├── galleryItem.js   ← Gallery photos + videos
-        ├── mediaVideo.js    ← Media section videos
-        ├── track.js         ← Music player tracks + MP3 upload
-        └── tourDate.js      ← Tour dates
+- index.html               HTML entry + Google Fonts + favicon/social tags
+- vite.config.js
+- vercel.json              SPA routing + audio headers
+- package.json
+- public/
+  - brand/                 Logo assets (committed)
+    - voidance-logo.svg      nav bar logo
+    - voidance-logo.png      social share image (og:image)
+    - voidance-hero.svg      large eclipse logo for the hero
+    - favicon.png            browser tab icon (cropped eclipse)
+    - apple-touch-icon.png   iOS home-screen icon
+  - music/                 Local MP3 fallback (gitignored)
+  - images/events/         Local photo fallback (gitignored)
+- src/
+  - main.jsx               App entry, scroll reset
+  - App.jsx                Section layout
+  - styles/index.css       All styles + responsive breakpoints
+  - lib/sanity.js          Sanity client + GROQ queries
+  - hooks/
+    - useSanity.js         Generic Sanity fetch hook w/ fallback
+    - useAudioPlayer.js    Music player state + Sanity tracks
+  - data/
+    - bandData.js          Static config + FALLBACK content
+    - galleryData.js       FALLBACK gallery content
+  - utils/
+    - audioEngine.js       Audio playback (real + synth fallback)
+    - canvasArt.js         Procedural album/video art
+  - components/            Nav, Hero, Gallery(01), About(02), Members(03),
+                           Discography(04), Tour(05), Media(06), Contact(07),
+                           Footer, Starfield, MusicPlayer
+- studio/                  Sanity Studio (the CMS / admin panel)
+  - sanity.config.js       Studio config (project ID, plugins)
+  - sanity.cli.js          CLI config (deploy host)
+  - schemas/               galleryItem, mediaVideo, track, tourDate, index
 ```
 
 ---
@@ -109,14 +99,41 @@ voidance-react/
 
 ```
 Hero
-├── 01 // EVENTS & LIVE   (Gallery carousel)
-├── 02 // ORIGIN          (About)
-├── 03 // THE VOID COLLECTIVE (Members)
-├── 04 // DISCOGRAPHY
-├── 05 // TOUR DATES
-├── 06 // MEDIA
-└── 07 // CONTACT
+- 01 // EVENTS & LIVE        (Gallery carousel)
+- 02 // ORIGIN              (About)
+- 03 // THE VOID COLLECTIVE (Members)
+- 04 // DISCOGRAPHY
+- 05 // TOUR DATES
+- 06 // MEDIA
+- 07 // CONTACT
 ```
+
+---
+
+## Branding / Logo
+
+All logo assets live in `public/brand/` and are committed to the repo.
+
+| File | Used for |
+|------|----------|
+| `voidance-logo.svg` | Nav bar logo |
+| `voidance-logo.png` | Social share preview (og:image) |
+| `voidance-hero.svg` | Large glowing eclipse logo in the hero |
+| `favicon.png` | Browser tab icon (cropped eclipse "O", round, transparent corners) |
+| `apple-touch-icon.png` | iOS home-screen icon (180×180) |
+
+Wired up in: `src/components/Hero.jsx` (hero eclipse), `src/components/Nav.jsx`
+(nav logo), and `index.html` (favicon + social tags).
+
+**Hero blend trick:** the hero image has a black background. To blend it into the
+dark starfield with no visible square edge, `.hero-eclipse img` uses
+`mix-blend-mode: screen` in `src/styles/index.css`. If you swap in a
+transparent-background image later, you can remove that line.
+
+**To replace the logo:** drop the new file into `public/brand/` (same filename),
+then `git push`. Sizing is controlled in `src/styles/index.css` —
+`.nav-logo-img` (nav, with a separate value in the `@media (max-width: 600px)`
+block for mobile) and `.hero-eclipse` (hero).
 
 ---
 
@@ -149,19 +166,15 @@ add **all** the items you want there.
 
 ### Finding a YouTube video ID
 The ID is the part after `?v=` in the URL:
-```
-https://www.youtube.com/watch?v=KZ0QZHibRqA
-                                ^^^^^^^^^^^ this is the ID
-```
+`https://www.youtube.com/watch?v=KZ0QZHibRqA` -> the ID is `KZ0QZHibRqA`
 
 ### Adding a new track (audio)
-1. Studio → **Track** → compose new
-2. Title (e.g. `NEW SONG`), Album, Duration **in seconds** (3:45 = 225)
+1. Studio -> **Track** -> compose new
+2. Title, Album, Duration **in seconds** (3:45 = 225)
 3. Under **Audio File**, upload the MP3 (it goes to Sanity's CDN)
 4. Set **Playlist Order** and **Publish**
 
-That's it — **no `vercel --prod` needed for audio anymore.** The MP3 is served
-from Sanity's CDN.
+No `vercel --prod` needed for audio anymore — the MP3 is served from Sanity's CDN.
 
 ---
 
@@ -172,18 +185,17 @@ First-time setup after cloning:
 ```bash
 cd voidance-react
 npm install            # install site dependencies
-npm run dev            # start dev server → http://localhost:5173
+npm run dev            # start dev server -> http://localhost:5173
 ```
 
 The dev server reads live content from Sanity (CORS is already configured for
 `localhost:5173` and `5174`).
 
 ### Running the Studio locally (optional)
-You normally use the hosted studio, but to run it locally:
 ```bash
 cd studio
 npm install
-npm run dev            # → http://localhost:3333
+npm run dev            # -> http://localhost:3333
 ```
 
 ### Available commands
@@ -203,47 +215,103 @@ Studio (run from `studio/`):
 
 ---
 
-## Deploying
+## Deploying to Production
 
-### The simple rule
+Since the site now uses Sanity, there are **two different kinds of "deploy"** —
+and most of the time you won't touch code at all.
 
-| What changed | How to deploy |
-|--------------|---------------|
-| **Content** (photos, videos, tracks, tour dates) | Nothing! Publish in the studio — it's instant |
-| **Site code / design** | `git push` (Vercel auto-deploys) |
-| **Studio schema** (new content fields) | rebuild + redeploy the studio (below) |
+### Quick decision: what are you changing?
 
-Because all content and media now live in Sanity, **you almost never need to
-deploy manually anymore.** Day-to-day content updates happen entirely in the
-admin panel.
+| What you changed | What to do | Takes effect |
+|------------------|-----------|--------------|
+| Content (photos, videos, songs, tour dates) | Publish in the Studio | Seconds — no deploy |
+| Site code or design (CSS, components, logo) | Push to GitHub | ~30s auto-deploy |
+| Studio schema (`studio/schemas/`) | Rebuild + redeploy studio | ~1 min |
 
-### Deploying site code changes
+---
+
+### A) Publishing CONTENT (the everyday case)
+
+You do **not** touch code or run any commands.
+
+1. Go to **https://voidance-studio.vercel.app**
+2. Log in with GitHub
+3. Add or edit an item (Gallery Item, Media Video, Track, Tour Date)
+4. Click **Publish** (bottom-right)
+5. Open **https://voidance.vercel.app** and hard-refresh (Ctrl+Shift+R)
+
+The live site reads from Sanity on load, so published content appears within
+seconds. **No git, no Vercel, no build.** Audio/images come from Sanity's CDN,
+so even new MP3s need no code deploy.
+
+---
+
+### B) Deploying CODE / DESIGN changes to production
+
+Use this when you've edited components, CSS, the logo, `index.html`, etc.
+
+**Step 1 — Make sure it builds locally (catch errors before production)**
+```bash
+cd voidance-react
+npm run build
+```
+If this completes with no red errors, you're good. (It creates a `dist/` folder
+you can ignore — it's gitignored.)
+
+**Step 2 — Optionally preview the production build**
+```bash
+npm run preview
+```
+Open the URL it prints and click around. Ctrl+C to stop.
+
+**Step 3 — Commit and push**
 ```bash
 git add .
-git commit -m "describe your change"
+git commit -m "describe what you changed"
 git push
 ```
-Vercel auto-deploys the site within ~30 seconds.
 
-### Deploying the studio (only when schemas change)
-Only needed if you edit files in `studio/schemas/`:
+**Step 4 — Vercel auto-deploys**
+Pushing to the `main` branch triggers Vercel automatically. Within ~30 seconds
+the change is live at **https://voidance.vercel.app**. Watch the build at
+https://vercel.com (your project dashboard).
+
+> You do **not** run `vercel --prod` for normal code changes — the GitHub push
+> handles it.
+
+If `git push` is rejected for email privacy, see "Working Across Machines" below.
+
+### C) Deploying STUDIO changes (rare — only when schemas change)
+
+Only needed if you edited files in `studio/schemas/` (e.g. added a new field to
+a Track or Tour Date).
+
 ```bash
 cd studio
 npm run build
 vercel dist --prod --yes
 ```
-This redeploys https://voidance-studio.vercel.app.
+This redeploys **https://voidance-studio.vercel.app**.
 
 > Note: the built-in `sanity deploy` command currently has a CLI bug
 > (`uploadSchema is not a function`), so we deploy the studio's built `dist/`
-> folder to Vercel instead. This is why the studio is hosted on
+> folder to Vercel instead. That's why the studio lives on
 > `voidance-studio.vercel.app` rather than `*.sanity.studio`.
 
 ---
 
-## First-Time Vercel Setup (new machine)
+### Full release checklist (when you've changed several things)
 
-Do this once per machine before you can deploy.
+1. Content added/edited in Studio -> **Published**
+2. `npm run build` passes locally with no errors
+3. `git add . && git commit -m "..." && git push`
+4. Vercel shows a successful deploy (green) in the dashboard
+5. Hard-refresh https://voidance.vercel.app and verify
+6. (Only if schemas changed) redeploy the studio per section C
+
+---
+
+## First-Time Vercel Setup (new machine)
 
 ```bash
 npm install -g vercel     # install Vercel CLI
@@ -257,8 +325,8 @@ project — choose **voidance** (not voidance-studio).
 
 ## First-Time Sanity Setup (new machine)
 
-Only needed if you want to manage content via CLI or run the studio locally.
-For normal content editing, just use the hosted admin panel — no setup needed.
+Only needed to manage content via CLI or run the studio locally. For normal
+content editing, just use the hosted admin panel — no setup needed.
 
 ```bash
 npm install -g sanity     # install Sanity CLI
@@ -280,13 +348,9 @@ git pull
 ```
 
 ### If git push is rejected for email privacy
-GitHub may block a push that exposes a private email. Fix once per machine:
 1. Get your private email at https://github.com/settings/emails
    (looks like `123456789+username@users.noreply.github.com`)
-2. Set it:
-   ```bash
-   git config --global user.email "123456789+username@users.noreply.github.com"
-   ```
+2. Set it: `git config --global user.email "...noreply.github.com"`
 3. Re-commit and push:
    ```bash
    git commit --amend --reset-author --no-edit
@@ -301,43 +365,28 @@ GitHub may block a push that exposes a private email. Fix once per machine:
 - Falls back to a procedural Web Audio synth if a track has no audio file
 - Fade in on play, fade out on pause, crossfade between tracks
 - Controls: play/pause, prev/next, seek, volume, mute, playlist drawer
-- Cross-browser support (Chrome, Firefox, Brave, mobile)
+- Cross-browser (Chrome, Firefox, Brave, mobile)
 
 ---
 
 ## Fallback Data
 
-The files in `src/data/` (`bandData.js`, `galleryData.js`) are **offline
-fallbacks** — used only if Sanity returns nothing. Static items that aren't
-managed in the CMS also live here:
+The files in `src/data/` are **offline fallbacks** — used only if Sanity returns
+nothing. Static items not managed in the CMS also live here:
 
 - **Always from `bandData.js`:** band identity, members, albums, social links,
   album-art colour palettes
 - **Fallback only (CMS is primary):** tracks, media videos, tour dates, gallery
 
-You normally never edit these. Update content in the admin panel instead.
-
 ---
 
 ## Troubleshooting
 
-**Content not showing / site looks empty**
-- Check the item is **Published** (not draft) in the studio
-- Hard refresh the browser (`Ctrl+Shift+R`)
-
-**New audio won't play**
-- Confirm the MP3 uploaded fully in the studio Track document
-- Confirm Duration (seconds) is set correctly
-
-**`npm install` fails**
-- Confirm Node.js v20+: `node -v`
-- Clear cache: `npm cache clean --force`, then retry
-
-**Port already in use**
-- Vite auto-picks the next free port — check the terminal for the URL
-
-**Studio shows a schema warning**
-- If you changed `studio/schemas/`, rebuild + redeploy the studio (see Deploying)
+**Content not showing** — confirm the item is **Published** (not draft); hard refresh (Ctrl+Shift+R).
+**New audio won't play** — confirm the MP3 uploaded fully and Duration (seconds) is set.
+**`npm install` fails** — confirm Node v20+ (`node -v`); `npm cache clean --force`.
+**Port already in use** — Vite auto-picks the next free port; check the terminal URL.
+**Studio schema warning** — if you changed `studio/schemas/`, rebuild + redeploy (section C).
 
 ---
 
@@ -345,10 +394,11 @@ You normally never edit these. Update content in the admin panel instead.
 
 | I want to... | Where |
 |--------------|-------|
-| Add a gig photo | Studio → Gallery Item |
-| Add a live video | Studio → Gallery Item (type: video) |
-| Add a featured video | Studio → Media Video |
-| Add a song | Studio → Track (upload MP3) |
-| Add a tour date | Studio → Tour Date |
-| Change site design/text | edit code → `git push` |
-| Change band members/socials | edit `src/data/bandData.js` → `git push` |
+| Add a gig photo | Studio -> Gallery Item |
+| Add a live video | Studio -> Gallery Item (type: video) |
+| Add a featured video | Studio -> Media Video |
+| Add a song | Studio -> Track (upload MP3) |
+| Add a tour date | Studio -> Tour Date |
+| Change site design/text | edit code -> `git push` |
+| Change the logo | replace file in `public/brand/` -> `git push` |
+| Change band members/socials | edit `src/data/bandData.js` -> `git push` |
