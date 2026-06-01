@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import useAudioPlayer from '../hooks/useAudioPlayer'
 import { drawAlbumArt } from '../utils/canvasArt'
-import { TRACKS, ALBUM_PALETTES } from '../data/bandData'
+import { ALBUM_PALETTES } from '../data/bandData'
 
 /* ── SVG Icons ── */
 const PrevIcon  = () => <svg width="18" height="18" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
@@ -54,7 +54,7 @@ export default function MusicPlayer() {
             <span>{player.track?.album}</span>
           </div>
           <div className="playlist-items">
-            {TRACKS.map((t, i) => (
+            {player.tracks.map((t, i) => (
               <div key={i}
                    className={`pl-item${i === player.trackIndex ? ' active' : ''}`}
                    onClick={() => player.play(i, 0)}>

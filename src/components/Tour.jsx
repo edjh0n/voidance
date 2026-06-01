@@ -1,4 +1,5 @@
-import { TOUR_DATES } from '../data/bandData'
+import { TOUR_DATES as FALLBACK_TOUR_DATES } from '../data/bandData'
+import { useSanityQuery, QUERIES } from '../hooks/useSanity'
 
 const STATUS_LABELS = {
   available: 'Tickets Available',
@@ -26,6 +27,9 @@ function TourItem({ item }) {
 }
 
 export default function Tour() {
+  const { data: sanityDates, loading } = useSanityQuery(QUERIES.tourDates, [])
+  const TOUR_DATES = !loading && sanityDates.length > 0 ? sanityDates : FALLBACK_TOUR_DATES
+
   return (
     <section id="tour">
       <div className="container">

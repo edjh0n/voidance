@@ -1,5 +1,18 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import { GALLERY } from '../data/galleryData'
+import { GALLERY as FALLBACK_GALLERY } from '../data/galleryData'
+import { useSanityQuery, QUERIES } from '../hooks/useSanity'
+
+// Normalize Sanity gallery item to the same shape the component expects
+function normalizeSanityItem(item) {
+  return {
+    type:     item.type,
+    src:      item.imageUrl  || '',
+    thumb:    item.thumbUrl  || item.imageUrl || '',
+    videoId:  item.videoId   || '',
+    caption:  item.caption   || '',
+    event:    item.event     || '',
+  }
+}
 
 /* ── Icons ── */
 const IconImage = () => (
@@ -87,6 +100,15 @@ const FILTER_TABS = [
 const THUMB_THRESHOLD = 5
 
 export default function Gallery() {
+  const { data: sanityItems, loading } = useSanityQuery(QUERIES.gallery, [])
+
+  // Use Sanity data if available, otherwise fall back to hardcoded data
+  const GALLERY = useMemo(() => {
+    if (!loading && sanityItems.length > 0)
+      return sanityItems.map(normalizeSanityItem)
+    return FALLBACK_GALLERY
+  }, [sanityItems, loading])
+
   const [filter,   setFilter]   = useState('all')
   const [current,  setCurrent]  = useState(0)
   const [paused,   setPaused]   = useState(false)

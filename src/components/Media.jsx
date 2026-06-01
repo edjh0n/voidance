@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { VIDEOS } from '../data/bandData'
+import { VIDEOS as FALLBACK_VIDEOS } from '../data/bandData'
 import { drawVideoThumb } from '../utils/canvasArt'
+import { useSanityQuery, QUERIES } from '../hooks/useSanity'
 
 function PlayIcon({ size = 22 }) {
   return (
@@ -77,10 +78,10 @@ function VideoCard({ video, featured }) {
 }
 
 export default function Media() {
-  // First video marked featured = large left slot
-  // Videos 2–3 = right sidebar
-  // Videos 4+ = responsive grid below
-  const featured  = VIDEOS.find(v => v.featured)
+  const { data: sanityVideos, loading } = useSanityQuery(QUERIES.mediaVideos, [])
+  const VIDEOS = !loading && sanityVideos.length > 0 ? sanityVideos : (FALLBACK_VIDEOS || [])
+
+  const featured = VIDEOS.find(v => v.featured)
   const sidebar   = VIDEOS.filter(v => !v.featured).slice(0, 2)
   const overflow  = VIDEOS.filter(v => !v.featured).slice(2)
 
