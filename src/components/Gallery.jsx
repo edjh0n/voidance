@@ -126,7 +126,7 @@ export default function Gallery() {
     if (filter === 'all')   return GALLERY
     if (filter === 'image') return GALLERY.filter(i => i.type === 'image' || i.type === 'placeholder')
     return GALLERY.filter(i => i.type === 'video')
-  }, [filter])
+  }, [filter, GALLERY])
 
   const total     = items.length
   const item      = items[current]
