@@ -14,22 +14,22 @@ export const urlFor = (source) => builder.image(source)
 // ── GROQ queries ─────────────────────────────────────────────────
 
 export const QUERIES = {
-  gallery: `*[_type == "galleryItem"] | order(order asc) {
+  gallery: `*[_type == "galleryItem"] | order(_createdAt desc) {
     _id, type, caption, event, videoId,
     "imageUrl": photo.asset->url,
     "thumbUrl": photo.asset->url
   }`,
 
-  mediaVideos: `*[_type == "mediaVideo"] | order(order asc) {
+  mediaVideos: `*[_type == "mediaVideo"] | order(_createdAt desc) {
     _id, title, meta, youtubeId, featured, hue
   }`,
 
-  tracks: `*[_type == "track"] | order(order asc) {
+  tracks: `*[_type == "track"] | order(_createdAt desc) {
     _id, title, album, duration, type, paletteIndex,
     "audioSrc": audioFile.asset->url
   }`,
 
-  tourDates: `*[_type == "tourDate"] | order(order asc) {
+  tourDates: `*[_type == "tourDate"] | order(_createdAt desc) {
     _id, date, year, venue, location, status
   }`,
 }
