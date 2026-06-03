@@ -36,12 +36,6 @@ export default {
       title: 'Event Name',
       type: 'string',
     },
-    {
-      name: 'order',
-      title: 'Display Order',
-      type: 'number',
-      description: 'Lower numbers appear first',
-    },
   ],
   preview: {
     select: { title: 'caption', subtitle: 'event', media: 'photo', type: 'type' },
@@ -49,5 +43,5 @@ export default {
       return { title, subtitle: `${type?.toUpperCase()} — ${subtitle || ''}`, media }
     },
   },
-  orderings: [{ title: 'Display Order', name: 'orderAsc', by: [{ field: 'order', direction: 'asc' }] }],
+  orderings: [],
 }

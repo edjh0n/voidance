@@ -36,11 +36,6 @@ export default {
       description: '0–360. Used for placeholder thumbnail when no YouTube ID is set.',
       initialValue: 200,
     },
-    {
-      name: 'order',
-      title: 'Display Order',
-      type: 'number',
-    },
   ],
   preview: {
     select: { title: 'title', subtitle: 'meta', featured: 'featured' },

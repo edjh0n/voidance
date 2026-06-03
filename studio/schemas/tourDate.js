@@ -38,11 +38,6 @@ export default {
       options: { list: ['available', 'limited', 'sold-out'], layout: 'radio' },
       initialValue: 'available',
     },
-    {
-      name: 'order',
-      title: 'Display Order',
-      type: 'number',
-    },
   ],
   preview: {
     select: { title: 'venue', date: 'date', year: 'year', status: 'status' },

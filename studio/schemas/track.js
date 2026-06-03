@@ -44,12 +44,6 @@ export default {
       options: { list: [{ title: 'Blue (0)', value: 0 }, { title: 'Red (1)', value: 1 }, { title: 'Green (2)', value: 2 }] },
       initialValue: 2,
     },
-    {
-      name: 'order',
-      title: 'Playlist Order',
-      type: 'number',
-      description: 'Lower numbers appear first in the playlist',
-    },
   ],
   preview: {
     select: { title: 'title', subtitle: 'album', duration: 'duration' },
@@ -58,5 +52,5 @@ export default {
       return { title, subtitle: `${subtitle} — ${m}:${s < 10 ? '0' : ''}${s}` }
     },
   },
-  orderings: [{ title: 'Playlist Order', name: 'orderAsc', by: [{ field: 'order', direction: 'asc' }] }],
+  orderings: [],
 }
