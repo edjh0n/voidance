@@ -5,13 +5,14 @@
   "scripts": {
     "dev": "sanity dev",
     "build": "sanity build",
-    "deploy": "sanity deploy"
+    "deploy": "sanity build && node -e \"const fs=require('fs');fs.mkdirSync('dist/.vercel',{recursive:true});fs.writeFileSync('dist/.vercel/project.json',JSON.stringify({projectId:'prj_e2KyhlTJorH3qayKeY8YB1pi8XeB',orgId:'team_ha0jgqwXMMFhhS2cTVefYcnY',projectName:'voidance-studio'}));fs.writeFileSync('dist/vercel.json',JSON.stringify({rewrites:[{source:'/(.*)',destination:'/index.html'}]}));\" && cd dist && vercel --prod --yes"
   },
   "dependencies": {
-    "@sanity/vision": "^3.0.0",
+    "@sanity/vision": "3.30.0",
     "react": "^19.2.2",
     "react-dom": "^19.2.2",
-    "sanity": "^3.0.0",
+    "react-is": "^19.2.7",
+    "sanity": "3.30.0",
     "styled-components": "^6.4.2"
   }
 }

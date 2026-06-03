@@ -52,5 +52,4 @@ export default {
       return { title, subtitle: `${subtitle} — ${m}:${s < 10 ? '0' : ''}${s}` }
     },
   },
-  orderings: [],
 }

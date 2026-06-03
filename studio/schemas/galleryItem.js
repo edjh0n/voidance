@@ -43,5 +43,4 @@ export default {
       return { title, subtitle: `${type?.toUpperCase()} — ${subtitle || ''}`, media }
     },
   },
-  orderings: [],
 }
