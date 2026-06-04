@@ -54,8 +54,8 @@ export const ALBUM_PALETTES = [
 
 // ── Tour dates (FALLBACK — managed in Sanity) ───────────────────
 export const TOUR_DATES = [
-  { date: 'APRIL 18', year: '2026', venue: 'Roadhouse Rock & Dine', location: 'San Fernando, Cebu, Philippines', status: 'sold-out' },
   { date: 'MAY 16',   year: '2026', venue: "Quady's Bar",           location: 'Cebu City, Cebu, Philippines',    status: 'sold-out' },
+  { date: 'APRIL 18', year: '2026', venue: 'Roadhouse Rock & Dine', location: 'San Fernando, Cebu, Philippines', status: 'sold-out' },
 ]
 
 // ── Media videos (FALLBACK — managed in Sanity) ─────────────────

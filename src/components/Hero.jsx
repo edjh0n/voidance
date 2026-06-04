@@ -7,7 +7,7 @@ export default function Hero() {
       </div>
 
       <div className="hero-content">
-        <p className="hero-tag">// Progressive Metal &middot; Cebu City, Philippines</p>
+        <p className="hero-tag">// Progressive Metal / Experimental &middot; Cebu City, Philippines</p>
         <div className="hero-divider" />
         <p className="tagline">Born from the collapse of dying stars</p>
         <div className="hero-cta">

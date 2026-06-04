@@ -167,7 +167,7 @@ nav.nav--scrolled {
   opacity: 0; 
   animation: fadeIn 1s 1s forwards; 
 }
-/* .hero-cta { display: flex; gap: 1.5rem; margin-top: 1rem; opacity: 0; animation: fadeUp 1s 1.1s forwards; } */
+.hero-cta { display: flex; gap: 1.5rem; margin-top: 1rem; opacity: 0; animation: fadeUp 1s 1.1s forwards; }
 .hero-cta { display: flex; gap: 1.5rem; margin-top: 1.5rem; opacity: 0; animation: fadeUp 1s 1.1s forwards; }
 .btn { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; padding: 0.9rem 2.5rem; text-decoration: none; border: 1px solid; transition: all 0.3s; position: relative; overflow: hidden; cursor: pointer; }
 .btn::before { content: ''; position: absolute; inset: 0; transform: translateX(-100%); transition: transform 0.4s; }
