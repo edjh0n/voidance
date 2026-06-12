@@ -947,6 +947,28 @@ footer p { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: 
   color: var(--muted);
   line-height: 1.7;
 }
+.merch-loading {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(0,212,255,0.12);
+  background: rgba(0,212,255,0.03);
+  text-align: center;
+}
+.merch-loading span {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  color: var(--cyan);
+}
+.merch-loading p {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
 .merch-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

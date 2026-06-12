@@ -197,6 +197,58 @@ The live React site should now receive Sanity content for these sections instead
 
 ---
 
+## Production Domain CORS Fix
+
+After moving production traffic to the custom domain, Sanity content appeared missing and Merch Settings did not affect the live site. The Sanity dataset still contained the expected documents, including:
+
+```text
+merchSettings-main mode: coming-soon
+merchProduct: 11
+bandMember: 6
+originPage: 1
+discographyRelease: 1
+```
+
+Root cause: the Sanity CORS allowlist did not include the new production domains. It only included local development URLs, the hosted Studio URL, and the old Vercel app URL.
+
+Fixed by adding both production domains without credentials:
+
+```bash
+cd studio
+npx sanity cors add https://www.voidanze.com --no-credentials
+npx sanity cors add https://voidanze.com --no-credentials
+```
+
+Verified with:
+
+```bash
+cd studio
+npx sanity cors list
+```
+
+The allowlist now includes:
+
+```text
+https://voidanze.com
+https://www.voidanze.com
+https://voidance.vercel.app
+https://voidance-studio.vercel.app
+http://localhost:3333
+http://localhost:5173
+http://localhost:5174
+```
+
+Also verified that Sanity now returns browser CORS headers for both custom domains:
+
+```text
+Access-Control-Allow-Origin: https://www.voidanze.com
+Access-Control-Allow-Origin: https://voidanze.com
+```
+
+No code deployment was required for this fix. A browser hard refresh may be needed if the old failed/fallback state is cached in the open tab.
+
+---
+
 ## Remaining Follow-Up
 
 - Open `https://voidance-studio.vercel.app`.

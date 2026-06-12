@@ -2,6 +2,12 @@ import { useMemo, useState } from 'react'
 import { MERCH_FILTERS, MERCH_PRODUCTS } from '../data/merchData'
 import { useSanityQuery, QUERIES } from '../hooks/useSanity'
 
+const MERCH_MODE_OVERRIDE = import.meta.env.VITE_MERCH_MODE_OVERRIDE
+const VALID_MERCH_MODES = ['live', 'coming-soon']
+const merchModeOverride = VALID_MERCH_MODES.includes(MERCH_MODE_OVERRIDE)
+  ? MERCH_MODE_OVERRIDE
+  : null
+
 function MerchArt({ type }) {
   return (
     <svg viewBox="0 0 80 80" className={`merch-art merch-art--${type}`} aria-hidden="true">
@@ -123,14 +129,19 @@ export default function Merch({ onCheckout }) {
   const [filter, setFilter] = useState('all')
   const [cart, setCart] = useState([])
   const { data: sanityProducts, loading } = useSanityQuery(QUERIES.merchProducts, [])
-  const { data: merchSettings } = useSanityQuery(QUERIES.merchSettings, {
+  const { data: merchSettings, loading: settingsLoading } = useSanityQuery(QUERIES.merchSettings, {
     mode: 'live',
     comingSoonTitle: 'Merch Coming Soon',
     comingSoonMessage: 'Official VOIDANCE merch is being prepared. Check back soon for drops, sizes, and ordering details.',
   }, { fresh: true })
 
   const catalog = !loading && sanityProducts.length > 0 ? sanityProducts : MERCH_PRODUCTS
-  const comingSoon = merchSettings?.mode === 'coming-soon'
+  const effectiveMerchSettings = {
+    ...merchSettings,
+    mode: merchModeOverride || merchSettings?.mode,
+  }
+  const waitingForMerchSettings = settingsLoading && !merchModeOverride
+  const comingSoon = effectiveMerchSettings?.mode === 'coming-soon'
 
   const products = useMemo(
     () => filter === 'all' ? catalog : catalog.filter(p => p.category === filter),
@@ -193,11 +204,16 @@ export default function Merch({ onCheckout }) {
           <div className="section-line" />
         </div>
 
-        {comingSoon ? (
+        {waitingForMerchSettings ? (
+          <div className="merch-loading" aria-live="polite">
+            <span>// SYNC</span>
+            <p>Loading merch status...</p>
+          </div>
+        ) : comingSoon ? (
           <div className="merch-coming-soon">
             <span>// DROP</span>
-            <h3>{merchSettings.comingSoonTitle || 'Merch Coming Soon'}</h3>
-            <p>{merchSettings.comingSoonMessage || 'Official VOIDANCE merch is being prepared. Check back soon for drops, sizes, and ordering details.'}</p>
+            <h3>{effectiveMerchSettings.comingSoonTitle || 'Merch Coming Soon'}</h3>
+            <p>{effectiveMerchSettings.comingSoonMessage || 'Official VOIDANCE merch is being prepared. Check back soon for drops, sizes, and ordering details.'}</p>
           </div>
         ) : (
           <>

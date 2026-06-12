@@ -191,6 +191,31 @@ npm run dev            # start dev server -> http://localhost:5173
 The dev server reads live content from Sanity (CORS is already configured for
 `localhost:5173` and `5174`).
 
+### Local merch mode override
+
+Merch Settings in Sanity affects the live production site because the frontend
+reads from the `production` Sanity dataset. For local testing, use a Vite env
+override instead of changing the Studio setting.
+
+Create a local `.env.local` file in the project root:
+
+```text
+VITE_MERCH_MODE_OVERRIDE=coming-soon
+```
+
+Accepted values:
+
+```text
+live
+coming-soon
+```
+
+Remove the variable, leave it blank, or restart the dev server without it to go
+back to following Sanity Merch Settings.
+
+Do not add `VITE_MERCH_MODE_OVERRIDE` in Vercel Production unless you
+intentionally want production to ignore the Sanity merch toggle.
+
 ### Running the Studio locally (optional)
 ```bash
 cd studio
@@ -273,7 +298,7 @@ git push
 
 **Step 4 — Vercel auto-deploys**
 Pushing to the `main` branch triggers Vercel automatically. Within ~30 seconds
-the change is live at **https://voidanze.com**. Watch the build at
+the change is live at **https://www.voidanze.com**. Watch the build at
 https://vercel.com (your project dashboard).
 
 > You do **not** run `vercel --prod` for normal code changes — the GitHub push
@@ -306,7 +331,7 @@ This redeploys **https://voidance-studio.vercel.app**.
 2. `npm run build` passes locally with no errors
 3. `git add . && git commit -m "..." && git push`
 4. Vercel shows a successful deploy (green) in the dashboard
-5. Hard-refresh https://voidance.vercel.app and verify
+5. Hard-refresh https://www.voidanze.com and verify
 6. (Only if schemas changed) redeploy the studio per section C
 
 ---
