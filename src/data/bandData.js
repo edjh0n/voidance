@@ -22,12 +22,12 @@ export const BAND = {
 
 // ── Members (static) ────────────────────────────────────────────
 export const MEMBERS = [
-  { initials: 'MBA', role: 'Vocals', name: 'Mort Brian Apostol', socials: {} },
-  { initials: 'RY',  role: 'Guitar', name: 'Rovalle Yraola',     socials: {} },
-  { initials: 'EB',  role: 'Guitar', name: 'Erik Bombeza',       socials: {} },
-  { initials: 'EJB', role: 'Guitar', name: 'Ed Jan Baquero',     socials: {} },
-  { initials: 'AB',  role: 'Bass',   name: 'Adrian Buquis',      socials: {} },
-  { initials: 'ER',  role: 'Drums',  name: 'Elizier Roca',       socials: {} },
+  { initials: 'MBA', role: 'Vocals', name: 'Mort Brian Apostol', instrument: 'Lead Vocals', quote: 'The voice that carries the void.', socials: {} },
+  { initials: 'RY',  role: 'Guitar', name: 'Rovalle Yraola',     instrument: 'Lead Guitar', quote: 'Every riff is a controlled collapse.', socials: {} },
+  { initials: 'EB',  role: 'Guitar', name: 'Erik Bombeza',       instrument: 'Rhythm Guitar', quote: 'Texture is everything.', socials: {} },
+  { initials: 'EJB', role: 'Guitar', name: 'Ed Jan Baquero',     instrument: 'Guitar', quote: 'Three guitars, one sound.', socials: {} },
+  { initials: 'AB',  role: 'Bass',   name: 'Adrian Buquis',      instrument: 'Bass Guitar', quote: 'The low end is where it lives.', socials: {} },
+  { initials: 'ER',  role: 'Drums',  name: 'Elizier Roca',       instrument: 'Drums & Percussion', quote: 'Precision is the only language.', socials: {} },
 ]
 
 // ── Albums (static) ─────────────────────────────────────────────
@@ -44,6 +44,36 @@ export const SOCIALS = [
   { label: 'Apple Music', url: '#', active: false },
   { label: 'Bandcamp',    url: '#', active: false },
 ]
+
+export const HERO_STATS = [
+  { value: '6', label: 'Members' },
+  { value: '3', label: 'Tracks' },
+  { value: '2', label: 'Shows Played' },
+]
+
+export const TIMELINE = [
+  { year: 'EARLY 2026', text: 'Band forms. First rehearsals begin in Cebu City.' },
+  { year: 'MARCH 2026', text: 'CONTRITE recorded. First demo EP takes shape.' },
+  { year: 'APRIL 18, 2026', text: 'Debut live show - Roadhouse Rock & Dine, San Fernando. Sold out.' },
+  { year: 'MAY 16, 2026', text: "Second show - Quady's Bar, Cebu City. Sold out again." },
+  { year: 'COMING SOON', text: 'Debut album in the works. More shows announced soon.', muted: true },
+]
+
+export const ORIGIN_PAGE = {
+  title: 'ORIGIN',
+  paragraphs: [
+    'Formed in Cebu City, Philippines in 2026, VOIDANCE emerged from a shared obsession with progressive metal - music that does not just play but collapses inward on itself, dragging the listener into the dark.',
+    "Six musicians who had orbited each other's circles for years finally converged in early 2026. What started as late-night jams quickly became something heavier, stranger, and more deliberate.",
+    'The name says it all: the act of becoming void - emptying everything unnecessary until only the essential heaviness remains.',
+  ],
+  facts: [
+    { label: 'Genre', value: BAND.genre },
+    { label: 'Origin', value: 'Cebu City, PH' },
+    { label: 'Formed', value: String(BAND.formed) },
+    { label: 'Members', value: String(MEMBERS.length) },
+  ],
+  timeline: TIMELINE,
+}
 
 // ── Album art colour palettes (static — used by canvas art) ─────
 export const ALBUM_PALETTES = [

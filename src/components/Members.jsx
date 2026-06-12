@@ -1,4 +1,5 @@
-import { MEMBERS } from '../data/bandData'
+import { MEMBERS as FALLBACK_MEMBERS } from '../data/bandData'
+import { useSanityQuery, QUERIES } from '../hooks/useSanity'
 
 function MemberCard({ member }) {
   return (
@@ -6,30 +7,34 @@ function MemberCard({ member }) {
       <div className="member-avatar" data-initials={member.initials} />
       <div className="member-role">{member.role}</div>
       <div className="member-name">{member.name}</div>
-      { // Uncomment and populate member.socials when available:
-      <div className="member-socials">
-        {Object.entries(member.socials).map(([platform, url]) => (
-          <a key={platform} href={url} className="member-social-link" target="_blank" rel="noopener">
-            {platform}
-          </a>
-        ))}
-      </div>
-      }
+      {member.instrument && <div className="member-instrument">{member.instrument}</div>}
+      {member.quote && <p className="member-quote">&quot;{member.quote}&quot;</p>}
+      {member.socials && Object.keys(member.socials).length > 0 && (
+        <div className="member-socials">
+          {Object.entries(member.socials).map(([platform, url]) => (
+            <a key={platform} href={url} className="member-social-link" target="_blank" rel="noopener">
+              {platform}
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
 export default function Members() {
+  const { data: members } = useSanityQuery(QUERIES.bandMembers, FALLBACK_MEMBERS)
+
   return (
     <section id="members">
       <div className="container">
         <div className="section-header">
           <span className="section-num">03 //</span>
-          <h2 className="section-title">THE VOID COLLECTIVE</h2>
+          <h2 className="section-title">MEMBERS</h2>
           <div className="section-line" />
         </div>
         <div className="members-grid">
-          {MEMBERS.map(m => <MemberCard key={m.name} member={m} />)}
+          {members.map(m => <MemberCard key={m._id || m.name} member={m} />)}
         </div>
       </div>
     </section>

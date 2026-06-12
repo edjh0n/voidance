@@ -8,6 +8,8 @@ export const client = createClient({
   useCdn:    true,
 })
 
+export const freshClient = client.withConfig({ useCdn: false })
+
 const builder = imageUrlBuilder(client)
 export const urlFor = (source) => builder.image(source)
 
@@ -31,5 +33,26 @@ export const QUERIES = {
 
   tourDates: `*[_type == "tourDate"] | order(_createdAt desc) {
     _id, date, year, venue, location, status
+  }`,
+
+  merchProducts: `*[_type == "merchProduct" && active == true] | order(sortOrder asc, _createdAt desc) {
+    _id, name, sub, description, category, price, sizes, badge, stock, art, sortOrder,
+    "imageUrl": image.asset->url
+  }`,
+
+  merchSettings: `coalesce(*[_id == "merchSettings-main"][0], *[_type == "merchSettings"] | order(_updatedAt desc)[0]) {
+    _id, mode, comingSoonTitle, comingSoonMessage
+  }`,
+
+  originPage: `*[_type == "originPage"] | order(_updatedAt desc)[0] {
+    _id, title, paragraphs, facts, timeline
+  }`,
+
+  bandMembers: `*[_type == "bandMember" && active == true] | order(sortOrder asc, _createdAt asc) {
+    _id, initials, role, name, instrument, quote
+  }`,
+
+  discographyRelease: `*[_type == "discographyRelease" && featured == true] | order(sortOrder asc, _createdAt desc)[0] {
+    _id, title, year, tags, paletteIndex, tracks, noteLabel, note
   }`,
 }

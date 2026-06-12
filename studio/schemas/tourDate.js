@@ -33,10 +33,21 @@ export default {
     },
     {
       name: 'status',
-      title: 'Ticket Status',
+      title: 'Show Status',
       type: 'string',
-      options: { list: ['available', 'limited', 'sold-out'], layout: 'radio' },
-      initialValue: 'available',
+      options: {
+        list: [
+          { title: 'Upcoming', value: 'upcoming' },
+          { title: 'Tickets Available', value: 'available' },
+          { title: 'Free Entry / No Entrance Fee', value: 'free-entry' },
+          { title: 'Few Tickets Left', value: 'limited' },
+          { title: 'Sold Out', value: 'sold-out' },
+          { title: 'Done', value: 'done' },
+          { title: 'Cancelled', value: 'cancelled' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'upcoming',
     },
   ],
   preview: {

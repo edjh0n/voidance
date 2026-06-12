@@ -3,7 +3,7 @@
 Progressive Metal band website for **Voidance** (Cebu City, Philippines),
 built with **React 18 + Vite 7** and powered by **Sanity CMS** for content.
 
-- **Live site:** https://voidance.vercel.app
+- **Live site:** https://www.voidanze.com
 - **Admin panel (CMS):** https://voidance-studio.vercel.app
 - **GitHub repo:** https://github.com/edjh0n/voidance
 
@@ -238,7 +238,7 @@ You do **not** touch code or run any commands.
 2. Log in with GitHub
 3. Add or edit an item (Gallery Item, Media Video, Track, Tour Date)
 4. Click **Publish** (bottom-right)
-5. Open **https://voidance.vercel.app** and hard-refresh (Ctrl+Shift+R)
+5. Open **https://www.voidanze.com** and hard-refresh (Ctrl+Shift+R)
 
 The live site reads from Sanity on load, so published content appears within
 seconds. **No git, no Vercel, no build.** Audio/images come from Sanity's CDN,
@@ -273,7 +273,7 @@ git push
 
 **Step 4 — Vercel auto-deploys**
 Pushing to the `main` branch triggers Vercel automatically. Within ~30 seconds
-the change is live at **https://voidance.vercel.app**. Watch the build at
+the change is live at **https://voidanze.com**. Watch the build at
 https://vercel.com (your project dashboard).
 
 > You do **not** run `vercel --prod` for normal code changes — the GitHub push
@@ -377,6 +377,109 @@ nothing. Static items not managed in the CMS also live here:
 - **Always from `bandData.js`:** band identity, members, albums, social links,
   album-art colour palettes
 - **Fallback only (CMS is primary):** tracks, media videos, tour dates, gallery
+
+---
+
+## Current Production Release Flow
+
+Use this flow when deploying the current site. The main website and Sanity Studio
+are deployed separately.
+
+### 1. Verify the main website
+
+From the project root:
+
+```bash
+npm run build
+```
+
+### 2. Verify the Sanity Studio
+
+```bash
+cd studio
+npm run build
+cd ..
+```
+
+### 3. Commit and push the main website
+
+```bash
+git add .
+git commit -m "Add merch flow, CMS settings, and site enhancements"
+git push
+```
+
+Pushing to GitHub deploys the main website through Vercel.
+
+This is required for frontend/API changes such as:
+
+- merch page and cart quantity controls
+- merch checkout delivery fields
+- merch order API fallback behavior
+- merch coming soon/live display toggle
+- dynamic hero stats
+- tour date status logic
+- styling and component updates
+
+### 4. Deploy Sanity Studio when schemas change
+
+Run this only when files under `studio/schemas/` or Studio config changed:
+
+```bash
+cd studio
+npm run deploy
+cd ..
+```
+
+This is required for Studio changes such as:
+
+- `Merch Settings`
+- `Merch Product`
+- `Origin Page`
+- `Band Member`
+- `Discography Release`
+- updated `Tour Date` status options
+
+### 5. Merch order auto-response env vars
+
+The merch checkout API lives at:
+
+```text
+/api/merch-order
+```
+
+It forwards merch orders to Formspree and, when Resend is configured, sends the
+customer auto-response.
+
+Add these environment variables in the main website Vercel project:
+
+```text
+RESEND_API_KEY
+MERCH_ORDER_TO_EMAIL
+MERCH_ORDER_FROM_EMAIL
+```
+
+Optional:
+
+```text
+FORMSPREE_MERCH_ENDPOINT=https://formspree.io/f/xykanyew
+```
+
+If Resend is not configured, merch orders should still be captured through the
+Formspree fallback. Customer auto-response emails are skipped until the Resend
+variables are set.
+
+### 6. Final production checks
+
+After deploy:
+
+- Open the main website.
+- In Sanity Studio, test `Merch Settings`.
+- Set `Merch Display Mode` to `Coming Soon`, publish, and confirm the merch page hides products.
+- Set it back to `Live Store`, publish, and confirm products return.
+- Test merch checkout and confirm the order reaches Formspree.
+- If Resend env vars are configured, confirm the customer auto-response is sent.
+- Confirm `Tour Date` status options include Upcoming, Free Entry, Done, and Cancelled.
 
 ---
 

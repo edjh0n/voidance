@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react'
 
 const LINKS = [
-  { href: '#gallery',      label: 'Gallery'     },
-  { href: '#about',        label: 'Origin'      },
-  { href: '#members',      label: 'Members'     },
-  { href: '#discography',  label: 'Discography' },
-  { href: '#tour',         label: 'Tour'        },
-  // { href: '#media',        label: 'Media'       },
-  { href: '#contact',      label: 'Contact'     },
+  { page: 'hero', label: 'Home' },
+  { page: 'gallery', label: 'Gallery' },
+  { page: 'about', label: 'Origin' },
+  { page: 'members', label: 'Members' },
+  { page: 'discography', label: 'Discography' },
+  { page: 'tour', label: 'Tour' },
+  { page: 'merch', label: 'Merch' },
+  { page: 'contact', label: 'Contact' },
 ]
 
-export default function Nav() {
-  const [open,     setOpen]     = useState(false)
+export default function Nav({ activePage, onNavigate }) {
+  const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -26,19 +27,29 @@ export default function Nav() {
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
-  const handleLink = () => setOpen(false)
+  const handleNavigate = page => {
+    onNavigate(page)
+    setOpen(false)
+  }
 
   return (
     <>
-      {/* Nav bar */}
       <nav className={scrolled ? 'nav--scrolled' : ''}>
-        <a href="#hero" className="nav-logo">
+        <button type="button" className="nav-logo" onClick={() => handleNavigate('hero')} aria-label="Go to Home">
           <img src="/brand/voidance-logo.svg" alt="VOIDANCE" className="nav-logo-img" />
-        </a>
+        </button>
 
         <ul className="nav-links">
-          {LINKS.map(l => (
-            <li key={l.href}><a href={l.href}>{l.label}</a></li>
+          {LINKS.map(link => (
+            <li key={link.page}>
+              <button
+                type="button"
+                className={activePage === link.page ? 'active' : ''}
+                onClick={() => handleNavigate(link.page)}
+              >
+                {link.label}
+              </button>
+            </li>
           ))}
         </ul>
 
@@ -46,15 +57,22 @@ export default function Nav() {
           className={`nav-hamburger${open ? ' nav-hamburger--open' : ''}`}
           onClick={() => setOpen(o => !o)}
           aria-label="Toggle menu"
+          type="button"
         >
           <span /><span /><span />
         </button>
       </nav>
 
-      {/* Mobile drawer — rendered OUTSIDE nav so it's in the root stacking context */}
       <div className={`nav-mobile-drawer${open ? ' nav-mobile-drawer--open' : ''}`}>
-        {LINKS.map(l => (
-          <a key={l.href} href={l.href} onClick={handleLink}>{l.label}</a>
+        {LINKS.map(link => (
+          <button
+            type="button"
+            key={link.page}
+            className={activePage === link.page ? 'active' : ''}
+            onClick={() => handleNavigate(link.page)}
+          >
+            {link.label}
+          </button>
         ))}
       </div>
     </>

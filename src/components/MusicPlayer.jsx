@@ -39,6 +39,23 @@ export default function MusicPlayer() {
     }
   }, [player.trackIndex, player.track])
 
+  useEffect(() => {
+    const onPlayTrack = event => {
+      const index = event.detail?.index
+      const title = event.detail?.title
+      const titleIndex = title
+        ? player.tracks.findIndex(track => track.title?.toLowerCase() === title.toLowerCase())
+        : -1
+      if (titleIndex >= 0) {
+        player.play(titleIndex, 0)
+      } else if (Number.isInteger(index) && player.tracks[index]) {
+        player.play(index, 0)
+      }
+    }
+    window.addEventListener('voidance:play-track', onPlayTrack)
+    return () => window.removeEventListener('voidance:play-track', onPlayTrack)
+  }, [player])
+
   const handleSeek = e => {
     const rect = e.currentTarget.getBoundingClientRect()
     player.seek((e.clientX - rect.left) / rect.width)
