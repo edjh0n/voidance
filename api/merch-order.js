@@ -1,13 +1,70 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 const RESEND_ENDPOINT = 'https://api.resend.com/emails'
 const DEFAULT_FORMSPREE_MERCH_ENDPOINT = 'https://formspree.io/f/xykanyew'
+const LOCAL_ALLOWED_ORIGINS = new Set([
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5174',
+])
+
+function loadLocalEnv() {
+  if (process.env.VERCEL === '1' || process.env.NODE_ENV === 'production') return
+
+  const envPath = path.join(process.cwd(), '.env.local')
+  if (!fs.existsSync(envPath)) return
+
+  const lines = fs.readFileSync(envPath, 'utf8').split(/\r?\n/)
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+
+    const eq = trimmed.indexOf('=')
+    if (eq === -1) continue
+
+    const key = trimmed.slice(0, eq).trim()
+    let value = trimmed.slice(eq + 1).trim()
+    if (!key || process.env[key]) continue
+
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1)
+    }
+    process.env[key] = value
+  }
+}
+
+loadLocalEnv()
 
 function json(res, status, body) {
   res.status(status).setHeader('Content-Type', 'application/json')
   res.end(JSON.stringify(body))
 }
 
+function setCors(req, res) {
+  const origin = req.headers?.origin
+  if (!LOCAL_ALLOWED_ORIGINS.has(origin)) return
+
+  res.setHeader('Access-Control-Allow-Origin', origin)
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept')
+}
+
 function clean(value) {
   return String(value || '').trim()
+}
+
+function getResendErrorMessage(detail) {
+  try {
+    const parsed = JSON.parse(detail)
+    return parsed.message || parsed.error || detail
+  } catch {
+    return detail
+  }
 }
 
 async function sendResendEmail({ apiKey, from, to, replyTo, subject, text }) {
@@ -28,7 +85,7 @@ async function sendResendEmail({ apiKey, from, to, replyTo, subject, text }) {
 
   if (!response.ok) {
     const detail = await response.text()
-    throw new Error(`Resend rejected email: ${detail}`)
+    throw new Error(getResendErrorMessage(detail))
   }
 
   return response.json()
@@ -38,7 +95,17 @@ function getEmailConfig() {
   const apiKey = process.env.RESEND_API_KEY
   const from = process.env.MERCH_ORDER_FROM_EMAIL
   const to = process.env.MERCH_ORDER_TO_EMAIL
-  return apiKey && from && to ? { apiKey, from, to } : null
+  const missing = []
+  if (!apiKey) missing.push('RESEND_API_KEY')
+  if (!from) missing.push('MERCH_ORDER_FROM_EMAIL')
+  if (!to) missing.push('MERCH_ORDER_TO_EMAIL')
+  return {
+    configured: missing.length === 0,
+    missing,
+    apiKey,
+    from,
+    to,
+  }
 }
 
 async function forwardToFormspree(payload) {
@@ -58,6 +125,12 @@ async function forwardToFormspree(payload) {
 }
 
 export default async function handler(req, res) {
+  setCors(req, res)
+
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end()
+  }
+
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
     return json(res, 405, { error: 'Method not allowed' })
@@ -118,6 +191,7 @@ export default async function handler(req, res) {
   let formspreeForwarded = false
   let autoresponseSent = false
   let internalEmailSent = false
+  let emailWarning = ''
 
   try {
     await forwardToFormspree({
@@ -133,7 +207,7 @@ export default async function handler(req, res) {
   }
 
   const emailConfig = getEmailConfig()
-  if (emailConfig) {
+  if (emailConfig.configured) {
     const { apiKey, from, to } = emailConfig
     try {
       await sendResendEmail({
@@ -146,6 +220,7 @@ export default async function handler(req, res) {
       })
       internalEmailSent = true
     } catch (err) {
+      emailWarning = `Internal order email failed: ${err.message}`
       console.warn('[Merch Order] internal email failed:', err.message)
     }
 
@@ -160,15 +235,24 @@ export default async function handler(req, res) {
       })
       autoresponseSent = true
     } catch (err) {
+      emailWarning = `Customer auto-response failed: ${err.message}`
       console.warn('[Merch Order] customer autoresponse failed:', err.message)
     }
   } else {
-    console.warn('[Merch Order] Resend env vars not configured; skipped autoresponse emails.')
+    emailWarning = `Customer auto-response skipped. Missing env vars: ${emailConfig.missing.join(', ')}.`
+    console.warn(`[Merch Order] ${emailWarning}`)
   }
 
   if (!formspreeForwarded && !internalEmailSent) {
     return json(res, 500, { error: 'Unable to send merch order. Please try again.' })
   }
 
-  return json(res, 200, { ok: true, formspreeForwarded, internalEmailSent, autoresponseSent })
+  return json(res, 200, {
+    ok: true,
+    formspreeForwarded,
+    internalEmailSent,
+    autoresponseSent,
+    emailConfigured: emailConfig.configured,
+    emailWarning,
+  })
 }

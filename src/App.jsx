@@ -9,13 +9,14 @@ import Gallery            from './components/Gallery'
 import Merch              from './components/Merch'
 // import Media        from './components/Media'
 import Contact            from './components/Contact'
+import OrderConfirmed     from './components/OrderConfirmed'
 import Footer             from './components/Footer'
 import MusicPlayer        from './components/MusicPlayer'
 import Starfield          from './components/Starfield'
 import { Analytics }      from "@vercel/analytics/react"
 import { SpeedInsights }  from "@vercel/speed-insights/react"
 
-const PAGE_IDS = ['hero', 'gallery', 'about', 'members', 'discography', 'tour', 'merch', 'contact']
+const PAGE_IDS = ['hero', 'gallery', 'about', 'members', 'discography', 'tour', 'merch', 'contact', 'order-confirmed']
 
 function getPageFromHash() {
   const page = window.location.hash.replace('#', '') || 'hero'
@@ -25,6 +26,7 @@ function getPageFromHash() {
 export default function App() {
   const [activePage, setActivePage] = useState(getPageFromHash)
   const [checkoutSummary, setCheckoutSummary] = useState('')
+  const [orderConfirmation, setOrderConfirmation] = useState(null)
 
   useEffect(() => {
     const onHashChange = () => setActivePage(getPageFromHash())
@@ -51,6 +53,12 @@ export default function App() {
     navigate('contact')
   }
 
+  const completeOrder = confirmation => {
+    setOrderConfirmation(confirmation)
+    setCheckoutSummary('')
+    navigate('order-confirmed')
+  }
+
   const pages = {
     hero: <Hero onNavigate={navigate} />,
     gallery: <Gallery />,
@@ -59,7 +67,8 @@ export default function App() {
     discography: <Discography />,
     tour: <Tour />,
     merch: <Merch onCheckout={startCheckout} />,
-    contact: <Contact checkoutSummary={checkoutSummary} />,
+    contact: <Contact checkoutSummary={checkoutSummary} onOrderSuccess={completeOrder} />,
+    'order-confirmed': <OrderConfirmed confirmation={orderConfirmation} onNavigate={navigate} />,
   }
 
   return (

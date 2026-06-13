@@ -2,9 +2,24 @@ import { useEffect, useState } from 'react'
 import { SOCIALS } from '../data/bandData'
 import { FORMSPREE_ENDPOINTS } from '../lib/formspree'
 
-export default function Contact({ checkoutSummary = '' }) {
+const LOCAL_MERCH_API_ORIGIN = 'http://localhost:3000'
+
+function getMerchOrderEndpoint() {
+  if (
+    import.meta.env.DEV &&
+    window.location.hostname === 'localhost' &&
+    window.location.port !== '3000'
+  ) {
+    return `${LOCAL_MERCH_API_ORIGIN}/api/merch-order`
+  }
+
+  return '/api/merch-order'
+}
+
+export default function Contact({ checkoutSummary = '', onOrderSuccess }) {
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
+  const [warning, setWarning] = useState('')
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -24,19 +39,22 @@ export default function Contact({ checkoutSummary = '' }) {
     }))
     setStatus('idle')
     setError('')
+    setWarning('')
   }, [checkoutSummary])
 
   const handleSubmit = async e => {
     e.preventDefault()
     setStatus('loading')
     setError('')
+    setWarning('')
 
-    const endpoint = isMerchOrder ? '/api/merch-order' : FORMSPREE_ENDPOINTS.contact
+    const endpoint = isMerchOrder ? getMerchOrderEndpoint() : FORMSPREE_ENDPOINTS.contact
+    const orderSummary = checkoutSummary || form.message
     const merchFallbackMessage = `${form.message}\n\nContact details:\nName: ${form.name}\nEmail: ${form.email}\nMobile Number: ${form.mobile}\nAddress: ${form.address}`
     const payload = {
       ...form,
       formType: isMerchOrder ? 'Merch Order' : 'Contact',
-      orderSummary: checkoutSummary,
+      orderSummary,
       mobileNumber: form.mobile,
       deliveryAddress: form.address,
     }
@@ -50,29 +68,55 @@ export default function Contact({ checkoutSummary = '' }) {
         },
         body: JSON.stringify(body),
       })
+      const submitMerchFallback = () => fetch(FORMSPREE_ENDPOINTS.merchOrders, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...payload, message: merchFallbackMessage }),
+      })
 
       let response = await submit(payload)
+      let result = null
+      let submissionWarning = ''
 
       if (!response.ok && isMerchOrder) {
-        response = await fetch(FORMSPREE_ENDPOINTS.merchOrders, {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ ...payload, message: merchFallbackMessage }),
-        })
+        response = await submitMerchFallback()
+      }
+
+      try {
+        result = await response.json()
+      } catch {
+        result = null
+      }
+
+      if (isMerchOrder && response.ok && !result?.ok) {
+        response = await submitMerchFallback()
+        try {
+          result = await response.json()
+        } catch {
+          result = null
+        }
+        if (response.ok) {
+          submissionWarning = 'Order captured through Formspree fallback. Customer auto-response was not sent because the merch API did not return its expected response.'
+          setWarning(submissionWarning)
+        }
       }
 
       if (!response.ok) {
-        let detail = ''
-        try {
-          const result = await response.json()
-          detail = result.error || result.message || ''
-        } catch {
-          detail = ''
-        }
+        const detail = result?.error || result?.message || ''
         throw new Error(detail || 'Unable to send message. Please try again.')
+      }
+
+      if (isMerchOrder) {
+        onOrderSuccess?.({
+          orderSummary,
+          email: form.email,
+          autoresponseSent: Boolean(result?.autoresponseSent),
+          warning: result?.emailWarning || submissionWarning,
+        })
+        return
       }
 
       setStatus('success')
@@ -86,6 +130,7 @@ export default function Contact({ checkoutSummary = '' }) {
     setForm(current => ({ ...current, [e.target.name]: e.target.value }))
     setStatus('idle')
     setError('')
+    setWarning('')
   }
 
   return (
@@ -157,6 +202,7 @@ export default function Contact({ checkoutSummary = '' }) {
                 {checkoutSummary ? 'Order sent. We will follow up through your contact details.' : 'Message sent. We will get back to you soon.'}
               </p>
             )}
+            {warning && <p className="form-note form-note--warning">{warning}</p>}
             {status === 'error' && <p className="form-note form-note--error">{error}</p>}
           </form>
         </div>

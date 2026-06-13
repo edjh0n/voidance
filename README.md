@@ -85,8 +85,8 @@ voidance-react/
     - audioEngine.js       Audio playback (real + synth fallback)
     - canvasArt.js         Procedural album/video art
   - components/            Nav, Hero, Gallery(01), About(02), Members(03),
-                           Discography(04), Tour(05), Media(06), Contact(07),
-                           Footer, Starfield, MusicPlayer
+                           Discography(04), Tour(05), Merch(06), Contact(07),
+                           OrderConfirmed, Footer, Starfield, MusicPlayer
 - studio/                  Sanity Studio (the CMS / admin panel)
   - sanity.config.js       Studio config (project ID, plugins)
   - sanity.cli.js          CLI config (deploy host)
@@ -215,6 +215,39 @@ back to following Sanity Merch Settings.
 
 Do not add `VITE_MERCH_MODE_OVERRIDE` in Vercel Production unless you
 intentionally want production to ignore the Sanity merch toggle.
+
+### Testing merch orders locally
+
+Local merch order emails use the Vercel serverless function at
+`/api/merch-order`, so run both the Vite frontend and Vercel dev server:
+
+```bash
+npm run dev
+vercel dev --listen 3000
+```
+
+Open the site from the Vite URL:
+
+```text
+http://localhost:5173
+```
+
+When the frontend runs on `localhost:5173`, merch orders are routed to the local
+Vercel function on `localhost:3000`.
+
+For local auto-response testing, add these server-side values to `.env.local`
+alongside `VITE_MERCH_MODE_OVERRIDE`:
+
+```text
+RESEND_API_KEY=
+MERCH_ORDER_TO_EMAIL=
+MERCH_ORDER_FROM_EMAIL=VOIDANCE <orders@mail.voidanze.com>
+FORMSPREE_MERCH_ENDPOINT=https://formspree.io/f/xykanyew
+```
+
+After a successful merch order, the site redirects to hidden page
+`#order-confirmed`, shows the order status, then returns to `#merch` after a few
+seconds.
 
 ### Running the Studio locally (optional)
 ```bash
@@ -494,6 +527,10 @@ If Resend is not configured, merch orders should still be captured through the
 Formspree fallback. Customer auto-response emails are skipped until the Resend
 variables are set.
 
+After a successful merch order, the frontend redirects the customer to hidden
+page `#order-confirmed`. This page is not listed in the navigation. It displays
+the order summary, email status, and then returns the customer to `#merch`.
+
 ### 6. Final production checks
 
 After deploy:
@@ -504,6 +541,7 @@ After deploy:
 - Set it back to `Live Store`, publish, and confirm products return.
 - Test merch checkout and confirm the order reaches Formspree.
 - If Resend env vars are configured, confirm the customer auto-response is sent.
+- Confirm successful merch orders redirect to `#order-confirmed`, then return to `#merch`.
 - Confirm `Tour Date` status options include Upcoming, Free Entry, Done, and Cancelled.
 
 ---
