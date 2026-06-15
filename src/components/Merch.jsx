@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import { MERCH_FILTERS, MERCH_PRODUCTS } from '../data/merchData'
 import { useSanityQuery, QUERIES } from '../hooks/useSanity'
+import { urlFor } from '../lib/sanity'
+import { trackEvent } from '../utils/analytics'
 
 const MERCH_MODE_OVERRIDE = import.meta.env.VITE_MERCH_MODE_OVERRIDE
 const VALID_MERCH_MODES = ['live', 'coming-soon']
@@ -73,6 +75,15 @@ function MerchArt({ type }) {
   )
 }
 
+function merchImageUrl(product, width) {
+  if (!product.image) return product.imageUrl || ''
+  try {
+    return urlFor(product.image).width(width).format('webp').quality(82).url()
+  } catch {
+    return product.imageUrl || ''
+  }
+}
+
 function getBadge(product) {
   if (product.stock === 0) return 'sold-out'
   if (product.stock <= 5 && product.badge === 'limited') return 'limited'
@@ -84,12 +95,24 @@ function MerchCard({ product, onAdd }) {
   const soldOut = product.stock === 0
   const hasSizes = product.sizes?.length > 0
   const [selectedSize, setSelectedSize] = useState(hasSizes ? '' : null)
+  const imageSrc = merchImageUrl(product, 640)
+  const imageSrcSet = product.image
+    ? [320, 480, 640]
+      .map(width => `${merchImageUrl(product, width)} ${width}w`)
+      .join(', ')
+    : ''
 
   return (
     <article className={`merch-card${soldOut ? ' merch-card--sold-out' : ''}`}>
       <div className="merch-img">
-        {product.imageUrl ? (
-          <img src={product.imageUrl} alt={product.name} />
+        {imageSrc ? (
+          <img
+            src={imageSrc}
+            srcSet={imageSrcSet || undefined}
+            sizes="(max-width: 700px) 100vw, (max-width: 1000px) 33vw, 260px"
+            alt={product.name}
+            loading="lazy"
+          />
         ) : (
           <MerchArt type={product.art || 'eclipse'} />
         )}
@@ -157,6 +180,12 @@ export default function Merch({ onCheckout }) {
   const addToCart = (product, size = null) => {
     const cartKey = `${product._id || product.id}-${size || 'default'}`
     const stock = Number.isFinite(product.stock) ? product.stock : 99
+    trackEvent('merch_add_to_cart', {
+      productId: product._id || product.id,
+      productName: product.name,
+      category: product.category,
+      size: size || 'default',
+    })
     setCart(items => {
       const existing = items.find(item => item.key === cartKey)
       if (existing) {
@@ -171,6 +200,14 @@ export default function Merch({ onCheckout }) {
   }
 
   const incrementCartItem = key => {
+    const item = cart.find(entry => entry.key === key)
+    if (item) {
+      trackEvent('merch_cart_increment', {
+        productId: item.id,
+        productName: item.name,
+        size: item.size || 'default',
+      })
+    }
     setCart(items => items.map(item => {
       if (item.key !== key) return item
       const maxQty = item.stock ?? 99
@@ -179,6 +216,14 @@ export default function Merch({ onCheckout }) {
   }
 
   const decrementCartItem = key => {
+    const item = cart.find(entry => entry.key === key)
+    if (item) {
+      trackEvent('merch_cart_decrement', {
+        productId: item.id,
+        productName: item.name,
+        size: item.size || 'default',
+      })
+    }
     setCart(items => items.flatMap(item => {
       if (item.key !== key) return [item]
       return item.qty > 1 ? [{ ...item, qty: item.qty - 1 }] : []
@@ -186,12 +231,24 @@ export default function Merch({ onCheckout }) {
   }
 
   const removeCartItem = key => {
+    const item = cart.find(entry => entry.key === key)
+    if (item) {
+      trackEvent('merch_cart_remove', {
+        productId: item.id,
+        productName: item.name,
+        size: item.size || 'default',
+      })
+    }
     setCart(items => items.filter(item => item.key !== key))
   }
 
   const checkout = () => {
     if (!cart.length) return
     const summary = cart.map(formatCartItem).join(' / ')
+    trackEvent('merch_checkout_started', {
+      itemCount: total,
+      uniqueItems: cart.length,
+    })
     onCheckout(summary)
   }
 
@@ -261,7 +318,10 @@ export default function Merch({ onCheckout }) {
                   type="button"
                   key={item.key}
                   className={`merch-filter${filter === item.key ? ' merch-filter--active' : ''}`}
-                  onClick={() => setFilter(item.key)}
+                  onClick={() => {
+                    setFilter(item.key)
+                    trackEvent('merch_filter_changed', { filter: item.key })
+                  }}
                 >
                   {item.label}
                 </button>

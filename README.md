@@ -104,8 +104,9 @@ Hero
 - 03 // THE VOID COLLECTIVE (Members)
 - 04 // DISCOGRAPHY
 - 05 // TOUR DATES
-- 06 // MEDIA
+- 06 // MERCH
 - 07 // CONTACT
+- Hidden // ORDER CONFIRMED
 ```
 
 ---
@@ -150,6 +151,7 @@ You'll see four content types in the sidebar:
 | **Media Video** | Media section (06) | Paste a YouTube video ID, set one as "featured" |
 | **Track** | Music player | Type title + duration, upload the MP3 file |
 | **Tour Date** | Tour dates (05) | Fill date, venue, location, ticket status |
+| **Site Announcement** | Top site banner | Publish active banner text + optional CTA |
 
 ### To add content
 1. Click the content type in the sidebar
@@ -249,6 +251,18 @@ After a successful merch order, the site redirects to hidden page
 `#order-confirmed`, shows the order status, then returns to `#merch` after a few
 seconds.
 
+Merch orders include an order reference in the format
+`VOIDANCE-YYYYMMDD-XXXX`. The reference appears in the customer confirmation,
+internal order email, Formspree payload, and order-confirmed page.
+
+Merch analytics are sent through Vercel Analytics without personal data. Events
+include cart changes, checkout started, order submitted, Formspree fallback, and
+auto-response sent/failed.
+
+Newsletter signup uses the existing Formspree contact endpoint with
+`formType: Newsletter Signup`. If a separate Formspree form is created later,
+update `src/lib/formspree.js`.
+
 ### Running the Studio locally (optional)
 ```bash
 cd studio
@@ -279,6 +293,12 @@ Since the site now uses Sanity, there are **two different kinds of "deploy"** â€
 and most of the time you won't touch code at all.
 
 ### Quick decision: what are you changing?
+
+Short version:
+
+- **Main website changes** (`src/`, `api/`, `public/`, `index.html`, `README.md`) deploy by `git push`; Vercel auto-deploys the main site.
+- **Studio schema/config changes** (`studio/schemas/`, `studio/sanity.config.js`) also need a separate Studio deploy with `cd studio && npm run deploy`.
+- **Content changes inside Sanity Studio** only need Publish; no git push and no Studio redeploy.
 
 | What you changed | What to do | Takes effect |
 |------------------|-----------|--------------|
@@ -346,8 +366,8 @@ a Track or Tour Date).
 
 ```bash
 cd studio
-npm run build
-vercel dist --prod --yes
+npm run deploy
+cd ..
 ```
 This redeploys **https://voidance-studio.vercel.app**.
 
@@ -438,6 +458,17 @@ nothing. Static items not managed in the CMS also live here:
 
 ---
 
+## SEO, Accessibility, and Performance
+
+- `index.html` includes canonical/social tags and static JSON-LD for the band and website.
+- `src/components/StructuredData.jsx` injects current merch product and tour date JSON-LD from Sanity/fallback data.
+- `public/robots.txt` and `public/sitemap.xml` point crawlers to the root URL. Hash pages are not listed as separate sitemap URLs.
+- Sanity-backed gallery and merch images are rendered through optimized WebP URLs where image refs are available.
+- Keyboard focus states, skip-to-content, live form status messages, and reduced-motion behavior are part of the frontend accessibility baseline.
+- Vercel Speed Insights remains enabled. After production deploys, compare LCP, INP, and CLS before and after meaningful UI/media changes.
+
+---
+
 ## Current Production Release Flow
 
 Use this flow when deploying the current site. The main website and Sanity Studio
@@ -489,14 +520,29 @@ npm run deploy
 cd ..
 ```
 
+Skip this step for normal website-only changes. Run it when you add or change a
+Studio document type, field, validation rule, preview, or Studio config. This
+current enhancement release requires it because `Site Announcement` was added.
+
 This is required for Studio changes such as:
 
 - `Merch Settings`
 - `Merch Product`
+- `Site Announcement`
 - `Origin Page`
 - `Band Member`
 - `Discography Release`
 - updated `Tour Date` status options
+
+### Site announcements
+
+Use **Site Announcement** in the Studio for temporary banners such as show
+updates, merch drops, or urgent notices.
+
+- Only documents with `Active` enabled appear on the site.
+- The first active item by `Sort Order` is shown.
+- CTA type `Page` navigates inside the hash-based site.
+- CTA type `URL` opens the external link in a new tab.
 
 ### 5. Merch order auto-response env vars
 
@@ -542,6 +588,9 @@ After deploy:
 - Test merch checkout and confirm the order reaches Formspree.
 - If Resend env vars are configured, confirm the customer auto-response is sent.
 - Confirm successful merch orders redirect to `#order-confirmed`, then return to `#merch`.
+- Confirm merch analytics events appear in Vercel Analytics after interaction.
+- Confirm the order reference appears in Formspree, emails, and `#order-confirmed`.
+- Review Vercel Speed Insights after production traffic and watch LCP, INP, and CLS.
 - Confirm `Tour Date` status options include Upcoming, Free Entry, Done, and Cancelled.
 
 ---

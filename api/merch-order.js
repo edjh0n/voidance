@@ -58,6 +58,18 @@ function clean(value) {
   return String(value || '').trim()
 }
 
+function createOrderReference(date = new Date()) {
+  const yyyy = String(date.getUTCFullYear())
+  const mm = String(date.getUTCMonth() + 1).padStart(2, '0')
+  const dd = String(date.getUTCDate()).padStart(2, '0')
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let suffix = ''
+  for (let i = 0; i < 4; i++) {
+    suffix += alphabet[Math.floor(Math.random() * alphabet.length)]
+  }
+  return `VOIDANCE-${yyyy}${mm}${dd}-${suffix}`
+}
+
 function getResendErrorMessage(detail) {
   try {
     const parsed = JSON.parse(detail)
@@ -137,6 +149,7 @@ export default async function handler(req, res) {
   }
 
   const body = req.body || {}
+  const orderReference = createOrderReference()
   const order = {
     name: clean(body.name),
     email: clean(body.email),
@@ -160,6 +173,7 @@ export default async function handler(req, res) {
 
   const internalText = [
     'New VOIDANCE merch order',
+    `Reference: ${orderReference}`,
     '',
     'Customer:',
     `Full Name: ${order.name}`,
@@ -180,6 +194,8 @@ export default async function handler(req, res) {
   const customerText = [
     'Thanks for your VOIDANCE merch order.',
     '',
+    `Order reference: ${orderReference}`,
+    '',
     'We received your order request and delivery details. We will review item availability and shipping fee, then contact you with the final total and payment instructions.',
     '',
     'Stock is reserved only after payment confirmation.',
@@ -197,6 +213,7 @@ export default async function handler(req, res) {
     await forwardToFormspree({
       ...body,
       formType: 'Merch Order',
+      orderReference,
       message: internalText,
       mobileNumber: order.mobile,
       deliveryAddress: order.address,
@@ -215,7 +232,7 @@ export default async function handler(req, res) {
         from,
         to,
         replyTo: order.email,
-        subject: `New VOIDANCE merch order - ${order.name}`,
+        subject: `New VOIDANCE merch order ${orderReference} - ${order.name}`,
         text: internalText,
       })
       internalEmailSent = true
@@ -249,6 +266,7 @@ export default async function handler(req, res) {
 
   return json(res, 200, {
     ok: true,
+    orderReference,
     formspreeForwarded,
     internalEmailSent,
     autoresponseSent,

@@ -7,12 +7,13 @@ export default function Starfield() {
     const canvas = canvasRef.current
     const ctx    = canvas.getContext('2d')
     let W, H, stars = [], nebulae = [], t = 0, raf
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     const init = () => {
       W = canvas.width  = window.innerWidth
       H = canvas.height = window.innerHeight
       stars = []; nebulae = []
-      for (let i = 0; i < 280; i++)
+      for (let i = 0; i < (reduceMotion ? 90 : 280); i++)
         stars.push({ x: Math.random()*W, y: Math.random()*H,
           r: Math.random()*1.5+0.2, a: Math.random(),
           speed: Math.random()*0.3+0.05, pulse: Math.random()*Math.PI*2 })
@@ -36,7 +37,7 @@ export default function Starfield() {
         ctx.fillStyle = `rgba(168,200,232,${alpha})`
         ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill()
       })
-      raf = requestAnimationFrame(draw)
+      if (!reduceMotion) raf = requestAnimationFrame(draw)
     }
 
     window.addEventListener('resize', init)

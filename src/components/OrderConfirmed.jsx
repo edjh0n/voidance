@@ -5,6 +5,7 @@ const REDIRECT_SECONDS = 8
 export default function OrderConfirmed({ confirmation, onNavigate }) {
   const [secondsLeft, setSecondsLeft] = useState(REDIRECT_SECONDS)
   const orderSummary = confirmation?.orderSummary || 'Your merch order request'
+  const orderReference = confirmation?.orderReference || ''
   const email = confirmation?.email || ''
   const autoresponseSent = confirmation?.autoresponseSent
   const warning = confirmation?.warning || ''
@@ -41,6 +42,13 @@ export default function OrderConfirmed({ confirmation, onNavigate }) {
             <strong>{orderSummary}</strong>
           </div>
 
+          {orderReference && (
+            <div className="order-confirmation-summary">
+              <span>Reference</span>
+              <strong>{orderReference}</strong>
+            </div>
+          )}
+
           {email && (
             <div className="order-confirmation-summary">
               <span>Email</span>
@@ -64,7 +72,7 @@ export default function OrderConfirmed({ confirmation, onNavigate }) {
             </button>
           </div>
 
-          <p className="order-confirmation-redirect">
+          <p className="order-confirmation-redirect" aria-live="polite">
             Returning to merch in {secondsLeft} second{secondsLeft === 1 ? '' : 's'}.
           </p>
         </div>

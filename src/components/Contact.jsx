@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { SOCIALS } from '../data/bandData'
 import { FORMSPREE_ENDPOINTS } from '../lib/formspree'
+import NewsletterSignup from './NewsletterSignup'
+import { trackEvent } from '../utils/analytics'
 
 const LOCAL_MERCH_API_ORIGIN = 'http://localhost:3000'
 
@@ -58,6 +60,14 @@ export default function Contact({ checkoutSummary = '', onOrderSuccess }) {
       mobileNumber: form.mobile,
       deliveryAddress: form.address,
     }
+    const submitMerchFallback = () => fetch(FORMSPREE_ENDPOINTS.merchOrders, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ...payload, message: merchFallbackMessage }),
+    })
 
     try {
       const submit = body => fetch(endpoint, {
@@ -68,20 +78,13 @@ export default function Contact({ checkoutSummary = '', onOrderSuccess }) {
         },
         body: JSON.stringify(body),
       })
-      const submitMerchFallback = () => fetch(FORMSPREE_ENDPOINTS.merchOrders, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...payload, message: merchFallbackMessage }),
-      })
 
       let response = await submit(payload)
       let result = null
       let submissionWarning = ''
 
       if (!response.ok && isMerchOrder) {
+        trackEvent('merch_order_fallback', { reason: 'api_error_status' })
         response = await submitMerchFallback()
       }
 
@@ -101,6 +104,7 @@ export default function Contact({ checkoutSummary = '', onOrderSuccess }) {
         if (response.ok) {
           submissionWarning = 'Order captured through Formspree fallback. Customer auto-response was not sent because the merch API did not return its expected response.'
           setWarning(submissionWarning)
+          trackEvent('merch_order_fallback', { reason: 'unexpected_api_response' })
         }
       }
 
@@ -110,8 +114,23 @@ export default function Contact({ checkoutSummary = '', onOrderSuccess }) {
       }
 
       if (isMerchOrder) {
+        const orderReference = result?.orderReference || ''
+        trackEvent('merch_order_submitted', {
+          orderReference,
+          itemCount: orderSummary.split('/').filter(Boolean).length,
+          formspreeForwarded: Boolean(result?.formspreeForwarded),
+          emailConfigured: Boolean(result?.emailConfigured),
+        })
+        trackEvent(
+          result?.autoresponseSent ? 'merch_order_autoresponse_sent' : 'merch_order_autoresponse_failed',
+          {
+            orderReference,
+            hasWarning: Boolean(result?.emailWarning || submissionWarning),
+          }
+        )
         onOrderSuccess?.({
           orderSummary,
+          orderReference,
           email: form.email,
           autoresponseSent: Boolean(result?.autoresponseSent),
           warning: result?.emailWarning || submissionWarning,
@@ -121,6 +140,39 @@ export default function Contact({ checkoutSummary = '', onOrderSuccess }) {
 
       setStatus('success')
     } catch (err) {
+      if (isMerchOrder) {
+        trackEvent('merch_order_fallback', { reason: 'network_error' })
+        try {
+          const fallbackResponse = await submitMerchFallback()
+          if (!fallbackResponse.ok) {
+            throw new Error('Unable to send merch order through backup form. Please try again.')
+          }
+
+          const submissionWarning = 'Order captured through Formspree fallback. Customer auto-response was not sent because the merch API could not be reached.'
+          trackEvent('merch_order_submitted', {
+            orderReference: '',
+            itemCount: orderSummary.split('/').filter(Boolean).length,
+            formspreeForwarded: true,
+            emailConfigured: false,
+          })
+          trackEvent('merch_order_autoresponse_failed', {
+            orderReference: '',
+            hasWarning: true,
+          })
+          onOrderSuccess?.({
+            orderSummary,
+            orderReference: '',
+            email: form.email,
+            autoresponseSent: false,
+            warning: submissionWarning,
+          })
+          return
+        } catch (fallbackErr) {
+          setError(fallbackErr.message || 'Unable to send message. Please try again.')
+          setStatus('error')
+          return
+        }
+      }
       setError(err.message || 'Unable to send message. Please try again.')
       setStatus('error')
     }
@@ -162,6 +214,7 @@ export default function Contact({ checkoutSummary = '', onOrderSuccess }) {
                 )
               ))}
             </div>
+            <NewsletterSignup />
           </div>
 
           <form className="contact-form" onSubmit={handleSubmit}>
@@ -197,13 +250,15 @@ export default function Contact({ checkoutSummary = '', onOrderSuccess }) {
             <button type="submit" disabled={status === 'loading'}>
               {status === 'loading' ? 'Sending...' : status === 'success' ? 'Message Sent' : 'Send Message'}
             </button>
-            {status === 'success' && (
-              <p className="form-note">
-                {checkoutSummary ? 'Order sent. We will follow up through your contact details.' : 'Message sent. We will get back to you soon.'}
-              </p>
-            )}
-            {warning && <p className="form-note form-note--warning">{warning}</p>}
-            {status === 'error' && <p className="form-note form-note--error">{error}</p>}
+            <div aria-live="polite">
+              {status === 'success' && (
+                <p className="form-note">
+                  {checkoutSummary ? 'Order sent. We will follow up through your contact details.' : 'Message sent. We will get back to you soon.'}
+                </p>
+              )}
+              {warning && <p className="form-note form-note--warning">{warning}</p>}
+              {status === 'error' && <p className="form-note form-note--error">{error}</p>}
+            </div>
           </form>
         </div>
       </div>

@@ -17,7 +17,7 @@ export const urlFor = (source) => builder.image(source)
 
 export const QUERIES = {
   gallery: `*[_type == "galleryItem"] | order(_createdAt desc) {
-    _id, type, caption, event, videoId,
+    _id, type, caption, event, videoId, photo,
     "imageUrl": photo.asset->url,
     "thumbUrl": photo.asset->url
   }`,
@@ -36,7 +36,7 @@ export const QUERIES = {
   }`,
 
   merchProducts: `*[_type == "merchProduct" && active == true] | order(sortOrder asc, _createdAt desc) {
-    _id, name, sub, description, category, price, sizes, badge, stock, art, sortOrder,
+    _id, name, sub, description, category, price, sizes, badge, stock, art, sortOrder, image,
     "imageUrl": image.asset->url
   }`,
 
@@ -54,5 +54,9 @@ export const QUERIES = {
 
   discographyRelease: `*[_type == "discographyRelease" && featured == true] | order(sortOrder asc, _createdAt desc)[0] {
     _id, title, year, tags, paletteIndex, tracks, noteLabel, note
+  }`,
+
+  siteAnnouncement: `*[_type == "siteAnnouncement" && active == true] | order(sortOrder asc, _updatedAt desc)[0] {
+    _id, title, message, ctaLabel, ctaType, ctaPage, ctaUrl, tone
   }`,
 }

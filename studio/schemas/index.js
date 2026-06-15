@@ -8,6 +8,7 @@ import merchSettings from './merchSettings'
 import originPage from './originPage'
 import bandMember from './bandMember'
 import discographyRelease from './discographyRelease'
+import siteAnnouncement from './siteAnnouncement'
 
 export const schemaTypes = [
   galleryItem,
@@ -19,4 +20,5 @@ export const schemaTypes = [
   originPage,
   bandMember,
   discographyRelease,
+  siteAnnouncement,
 ]

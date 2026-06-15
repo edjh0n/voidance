@@ -10,9 +10,11 @@ import Merch              from './components/Merch'
 // import Media        from './components/Media'
 import Contact            from './components/Contact'
 import OrderConfirmed     from './components/OrderConfirmed'
+import AnnouncementBanner from './components/AnnouncementBanner'
 import Footer             from './components/Footer'
 import MusicPlayer        from './components/MusicPlayer'
 import Starfield          from './components/Starfield'
+import StructuredData     from './components/StructuredData'
 import { Analytics }      from "@vercel/analytics/react"
 import { SpeedInsights }  from "@vercel/speed-insights/react"
 
@@ -73,15 +75,18 @@ export default function App() {
 
   return (
     <>
+      <a className="skip-link" href="#main-content">Skip to content</a>
       <Starfield />
       <Nav activePage={activePage} onNavigate={navigate} />
-      <main className="page-shell">
+      <AnnouncementBanner onNavigate={navigate} />
+      <main className="page-shell" id="main-content" tabIndex="-1">
         <div className="page-view" key={activePage}>
           {pages[activePage]}
         </div>
       </main>
       <Footer />
       <MusicPlayer />
+      <StructuredData />
       <Analytics />
       <SpeedInsights/>
     </>

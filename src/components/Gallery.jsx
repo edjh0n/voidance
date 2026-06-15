@@ -1,13 +1,29 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { GALLERY as FALLBACK_GALLERY } from '../data/galleryData'
 import { useSanityQuery, QUERIES } from '../hooks/useSanity'
+import { urlFor } from '../lib/sanity'
+
+function sanityImageUrl(source, width, quality = 78) {
+  if (!source) return ''
+  try {
+    return urlFor(source).width(width).format('webp').quality(quality).url()
+  } catch {
+    return ''
+  }
+}
 
 // Normalize Sanity gallery item to the same shape the component expects
 function normalizeSanityItem(item) {
+  const source = item.photo
   return {
     type:     item.type,
-    src:      item.imageUrl  || '',
-    thumb:    item.thumbUrl  || item.imageUrl || '',
+    src:      sanityImageUrl(source, 1400) || item.imageUrl  || '',
+    srcSet:   [700, 1100, 1600]
+      .map(width => ({ width, url: sanityImageUrl(source, width) }))
+      .filter(image => image.url)
+      .map(image => `${image.url} ${image.width}w`)
+      .join(', '),
+    thumb:    sanityImageUrl(source, 220, 70) || item.thumbUrl  || item.imageUrl || '',
     videoId:  item.videoId   || '',
     caption:  item.caption   || '',
     event:    item.event     || '',
@@ -49,6 +65,8 @@ function ImageSlide({ item, active }) {
   return (
     <div className="gallery-image-wrap">
       <img src={item.src} alt={item.caption} className="gallery-img"
+        srcSet={item.srcSet || undefined}
+        sizes="(max-width: 700px) 100vw, 1100px"
         loading={active ? 'eager' : 'lazy'} draggable={false} />
     </div>
   )
@@ -114,6 +132,7 @@ export default function Gallery() {
   const [paused,   setPaused]   = useState(false)
   const [lightbox, setLightbox] = useState(null)
   const [inView,   setInView]   = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false)
 
   const touchRef   = useRef(null)
   const timerRef   = useRef(null)
@@ -171,13 +190,21 @@ export default function Gallery() {
     return () => obs.disconnect()
   }, [])
 
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () => setReducedMotion(media.matches)
+    update()
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
+
   // Auto-advance timer
   const startTimer = useCallback(() => {
     clearInterval(timerRef.current)
-    if (!paused && !isVideo && total > 1 && inView) {
+    if (!reducedMotion && !paused && !isVideo && total > 1 && inView) {
       timerRef.current = setInterval(() => setCurrent(c => (c + 1) % total), 5000)
     }
-  }, [paused, isVideo, total, inView])
+  }, [paused, isVideo, total, inView, reducedMotion])
 
   useEffect(() => { startTimer(); return () => clearInterval(timerRef.current) }, [startTimer])
 

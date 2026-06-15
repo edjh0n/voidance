@@ -26,6 +26,12 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
+# Local notes / generated plans
+*.md
+!README.md
+!public/music/README.md
+!public/images/events/README.md
+
 # ---- Local media fallback files ----
 # Primary content now lives in Sanity CMS (served from CDN).
 # These local copies are an offline fallback only; not committed.
