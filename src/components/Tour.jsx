@@ -1,6 +1,6 @@
 import { SOCIALS, TOUR_DATES as FALLBACK_TOUR_DATES } from '../data/bandData'
 import { useSanityQuery, QUERIES } from '../hooks/useSanity'
-import { getNextShow, getPastShowsCount } from '../utils/tourDates'
+import { getEffectiveTourStatus, getNextShow, getPastShowsCount, sortTourDatesByDate } from '../utils/tourDates'
 
 const STATUS_LABELS = {
   upcoming: 'Upcoming',
@@ -25,6 +25,8 @@ function getTourStats(tourDates) {
 }
 
 function TourItem({ item, muted }) {
+  const status = getEffectiveTourStatus(item)
+
   return (
     <div className={`tour-item${muted ? ' tour-item--muted' : ''}`}>
       <div className="tour-date">
@@ -35,8 +37,8 @@ function TourItem({ item, muted }) {
         <p>{item.location}</p>
       </div>
       <div className="tour-status">
-        <span className={`status-badge ${item.status}`}>
-          {STATUS_LABELS[item.status] || item.status}
+        <span className={`status-badge ${status}`}>
+          {STATUS_LABELS[status] || status}
         </span>
       </div>
     </div>
@@ -45,7 +47,8 @@ function TourItem({ item, muted }) {
 
 export default function Tour() {
   const { data: sanityDates, loading } = useSanityQuery(QUERIES.tourDates, [])
-  const tourDates = !loading && sanityDates.length > 0 ? sanityDates : FALLBACK_TOUR_DATES
+  const sourceTourDates = !loading && sanityDates.length > 0 ? sanityDates : FALLBACK_TOUR_DATES
+  const tourDates = sortTourDatesByDate(sourceTourDates, 'desc')
   const tourStats = getTourStats(tourDates)
   const facebook = SOCIALS.find(s => s.label === 'Facebook')
   const youtube = SOCIALS.find(s => s.label === 'YouTube')

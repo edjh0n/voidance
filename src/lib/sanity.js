@@ -56,7 +56,8 @@ export const QUERIES = {
     _id, title, year, tags, paletteIndex, tracks, noteLabel, note
   }`,
 
-  siteAnnouncement: `*[_type == "siteAnnouncement" && active == true] | order(sortOrder asc, _updatedAt desc)[0] {
-    _id, title, message, ctaLabel, ctaType, ctaPage, ctaUrl, tone
+  siteAnnouncement: `*[_type == "siteAnnouncement" && (active == true || announcementType in ["gig", "single", "album", "merch"])] | order(sortOrder asc, _updatedAt desc) {
+    _id, active, announcementType, title, message, ctaLabel, ctaType, ctaPage, ctaUrl, tone,
+    eventDate, releaseDate, autoShowDaysBefore, priority, expiresAt
   }`,
 }

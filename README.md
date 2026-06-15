@@ -539,10 +539,42 @@ This is required for Studio changes such as:
 Use **Site Announcement** in the Studio for temporary banners such as show
 updates, merch drops, or urgent notices.
 
-- Only documents with `Active` enabled appear on the site.
-- The first active item by `Sort Order` is shown.
+- `Active` enabled shows the announcement immediately, unless `Expires At` is
+  already past.
+- `Announcement Type = Gig` can auto-display even when `Active` is off.
+- For gig announcements, set `Event Date`. The banner appears
+  `Auto Show Days Before` the event date, defaulting to 7 days.
+- Set `Active` on a gig announcement when you want to announce it earlier than
+  the automatic window.
+- If there is no eligible manual announcement, the site automatically shows the
+  next Tour Date within 7 days as an `UPCOMING GIG` banner. Tour dates marked
+  `Done` or `Cancelled` are ignored.
+- On the actual event date, the automatic Tour Date banner changes to
+  `LIVE NOW` and uses a stronger animated treatment.
+- Merch drops, singles, albums, and general announcements stay manual: publish
+  them with `Active` enabled.
+- `Expires At` hides the announcement after that date and time.
+- The first eligible item by `Sort Order` is shown.
 - CTA type `Page` navigates inside the hash-based site.
 - CTA type `URL` opens the external link in a new tab.
+- Users can close the banner until the page is reloaded. Reloading the page or
+  opening the site in a new tab shows the announcement again. To remove it for
+  everyone, disable `Active`, set `Expires At`, mark the tour date `Done` or
+  `Cancelled`, or let the gig date window pass.
+
+Tour Dates display by parsed event date, newest/latest date first, not by the
+date the document was created or uploaded in Sanity.
+
+Past non-cancelled Tour Dates display as `Done` automatically on the site once
+their event date has passed. This is derived in the frontend; the Sanity
+document status is not rewritten automatically.
+
+Scheduled release behavior: singles, albums, and merch drops use one banner at a
+time with priority rules. `LIVE NOW` gigs stay highest priority; upcoming gigs
+within 7 days beat normal release countdowns; release-day and gig same-day
+scenarios use a combined banner such as `LIVE NOW / OUT NOW`. Release
+announcements use `Release Date`, `Auto Show Days Before`, `Priority`, and
+`Expires At` in the `Site Announcement` document.
 
 ### 5. Merch order auto-response env vars
 

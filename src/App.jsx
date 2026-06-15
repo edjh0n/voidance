@@ -29,6 +29,7 @@ export default function App() {
   const [activePage, setActivePage] = useState(getPageFromHash)
   const [checkoutSummary, setCheckoutSummary] = useState('')
   const [orderConfirmation, setOrderConfirmation] = useState(null)
+  const [announcementVisible, setAnnouncementVisible] = useState(false)
 
   useEffect(() => {
     const onHashChange = () => setActivePage(getPageFromHash())
@@ -78,8 +79,12 @@ export default function App() {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <Starfield />
       <Nav activePage={activePage} onNavigate={navigate} />
-      <AnnouncementBanner onNavigate={navigate} />
-      <main className="page-shell" id="main-content" tabIndex="-1">
+      <AnnouncementBanner onNavigate={navigate} onVisibilityChange={setAnnouncementVisible} />
+      <main
+        className={`page-shell${announcementVisible ? ' page-shell--announcement' : ''}`}
+        id="main-content"
+        tabIndex="-1"
+      >
         <div className="page-view" key={activePage}>
           {pages[activePage]}
         </div>

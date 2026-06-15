@@ -32,12 +32,39 @@ export function getPastShowsCount(tourDates) {
     .length
 }
 
+export function getEffectiveTourStatus(item, now = new Date()) {
+  if (item.status === 'cancelled') return 'cancelled'
+
+  const parsedDate = parseTourDate(item)
+  if (!parsedDate) return item.status || 'upcoming'
+
+  const today = new Date(now)
+  today.setHours(0, 0, 0, 0)
+  parsedDate.setHours(0, 0, 0, 0)
+
+  return parsedDate < today ? 'done' : (item.status || 'upcoming')
+}
+
 export function getNextShow(tourDates) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
   return tourDates
     .map(item => ({ item, parsedDate: parseTourDate(item) }))
-    .filter(({ item, parsedDate }) => parsedDate && parsedDate >= today && !['cancelled', 'done'].includes(item.status))
+    .filter(({ item, parsedDate }) => parsedDate && parsedDate >= today && !['cancelled', 'done'].includes(getEffectiveTourStatus(item)))
     .sort((a, b) => a.parsedDate - b.parsedDate)[0]?.item
+}
+
+export function sortTourDatesByDate(tourDates, direction = 'desc') {
+  const multiplier = direction === 'asc' ? 1 : -1
+
+  return [...tourDates].sort((a, b) => {
+    const dateA = parseTourDate(a)
+    const dateB = parseTourDate(b)
+
+    if (dateA && dateB) return (dateA - dateB) * multiplier
+    if (dateA) return -1
+    if (dateB) return 1
+    return 0
+  })
 }
